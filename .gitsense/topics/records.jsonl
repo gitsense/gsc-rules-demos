@@ -1,0 +1,5 @@
+{"slug":"security","description":"Security-related rules and triggers","created_at":"2026-06-27T03:26:53.784257Z","updated_at":"2026-06-27T03:26:53.784257Z"}
+{"slug":"testing","description":"Test files and fixtures","created_at":"2026-06-27T03:26:53.784985Z","updated_at":"2026-06-27T03:26:53.784985Z"}
+{"slug":"accounting","description":"Accounting and financial data files","created_at":"2026-06-27T03:26:53.78594Z","updated_at":"2026-06-27T03:26:53.78594Z"}
+{"slug":"deployment","description":"Deployment and CI/CD workflows","created_at":"2026-06-27T03:26:53.786669Z","updated_at":"2026-06-27T03:26:53.786669Z"}
+{"slug":"code-generation","description":"Auto-generated code files","created_at":"2026-06-27T03:26:53.786903Z","updated_at":"2026-06-27T03:26:53.786903Z"}

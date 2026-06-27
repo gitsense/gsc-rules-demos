@@ -1,0 +1,50 @@
+{
+  "version": "1",
+  "debug": false,
+  "event": {
+    "name": "post_tool_use",
+    "runtime": "pi",
+    "runtimeEvent": "tool_call"
+  },
+  "capabilities": {
+    "canBlock": false,
+    "canAddContext": true,
+    "canModifyInput": false,
+    "canModifyOutput": true
+  },
+  "session": {
+    "id": "test-session-nonblocking",
+    "path": "/tmp/test-nonblocking.jsonl",
+    "cwd": "/Users/terrchen/gsc-trigger-test"
+  },
+  "conversation": {
+    "leafId": "leaf-1",
+    "messageIds": ["msg-1"]
+  },
+  "model": {
+    "provider": "openai",
+    "id": "gpt-4",
+    "thinkingLevel": "off"
+  },
+  "payload": {
+    "toolResult": {
+      "toolName": "edit",
+      "toolCallId": "call-nonblocking",
+      "input": {
+        "path": "src/capabilities/nonblocking-target.txt",
+        "oldText": "old",
+        "newText": "new"
+      },
+      "content": [{ "type": "text", "text": "File edited successfully" }],
+      "isError": false
+    }
+  },
+  "rule": {
+    "id": "nonblocking-test-rule",
+    "summary": "Non-blocking capability test",
+    "type": "tool-trigger",
+    "ruleHash": "sha256:nonblocking-test",
+    "triggerHash": "sha256:nonblocking-test-trigger",
+    "event": "post_tool_use"
+  }
+}

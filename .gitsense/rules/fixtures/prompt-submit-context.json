@@ -1,0 +1,43 @@
+{
+  "version": "1",
+  "debug": false,
+  "event": {
+    "name": "user_prompt_submit",
+    "runtime": "pi",
+    "runtimeEvent": "input"
+  },
+  "capabilities": {
+    "canBlock": true,
+    "canAddContext": true,
+    "canModifyInput": true,
+    "canModifyOutput": false
+  },
+  "session": {
+    "id": "test-session-prompt",
+    "path": "/tmp/test-prompt.jsonl",
+    "cwd": "/Users/terrchen/gsc-trigger-test"
+  },
+  "conversation": {
+    "leafId": "leaf-1",
+    "messageIds": ["msg-1"]
+  },
+  "model": {
+    "provider": "openai",
+    "id": "gpt-4",
+    "thinkingLevel": "off"
+  },
+  "payload": {
+    "prompt": {
+      "text": "exit",
+      "source": "interactive"
+    }
+  },
+  "rule": {
+    "id": "exit-alias-rule",
+    "summary": "Exit command mapping",
+    "type": "tool-trigger",
+    "ruleHash": "sha256:exit-alias",
+    "triggerHash": "sha256:exit-alias-trigger",
+    "event": "user_prompt_submit"
+  }
+}

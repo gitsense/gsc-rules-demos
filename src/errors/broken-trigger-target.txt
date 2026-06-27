@@ -1,0 +1,10 @@
+This file is used to test error handling in triggers.
+
+When a trigger throws an error or returns invalid JSON, the rule engine should fail open (not block).
+
+Expected behavior:
+- Trigger that throws an error: No block, error logged
+- Trigger that returns invalid JSON: No block, error logged
+- Trigger that times out: No block, timeout logged
+
+This is important for resilience - a broken trigger should not prevent legitimate work.

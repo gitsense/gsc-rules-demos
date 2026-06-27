@@ -1,0 +1,17 @@
+# Q2 2024 Accounting Ledger
+# Format: date | type | amount | account | reference
+
+2024-04-01 | DEBIT | 1200.00 | Payroll Account | April salaries
+2024-04-05 | CREDIT | 7500.00 | Revenue Account | Payment received - Client D
+2024-04-10 | DEBIT | 150.00 | Utilities Account | Electric bill - March
+2024-04-15 | DEBIT | 500.00 | Marketing Account | Conference sponsorship
+2024-04-20 | CREDIT | 3000.00 | Operating Account | Invoice #1238 - Client E
+2024-05-01 | DEBIT | 1200.00 | Payroll Account | May salaries
+2024-05-10 | DEBIT | 175.00 | Utilities Account | Electric bill - April
+2024-05-15 | CREDIT | 3000.00 | Revenue Account | Payment received - Client E
+2024-05-20 | DEBIT | 1000.00 | Equipment Account | New laptop
+2024-06-01 | DEBIT | 1200.00 | Payroll Account | June salaries
+2024-06-10 | DEBIT | 200.00 | Utilities Account | Electric bill - May
+2024-06-15 | CREDIT | 4500.00 | Operating Account | Invoice #1239 - Client F
+2024-06-20 | DEBIT | 350.00 | Marketing Account | Website redesign
+2024-06-30 | DEBIT | 600.00 | Tax Account | Q2 estimated taxes

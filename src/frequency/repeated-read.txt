@@ -1,0 +1,11 @@
+This file is used to test frequency modes.
+
+When a trigger has frequency mode "once", it should only execute once per rule hash.
+When a trigger has frequency mode "always" (or no frequency), it should execute every time.
+
+Test scenarios:
+1. Read this file - trigger should fire
+2. Read this file again - trigger should fire again (frequency: always)
+3. If frequency is "once", second read should skip the trigger
+
+This helps verify that delivery tracking works correctly with the new gsc rules execute semantics.

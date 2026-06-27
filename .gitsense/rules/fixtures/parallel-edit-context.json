@@ -1,0 +1,55 @@
+{
+  "version": "1",
+  "debug": false,
+  "event": {
+    "name": "pre_tool_use",
+    "runtime": "pi",
+    "runtimeEvent": "tool_call"
+  },
+  "capabilities": {
+    "canBlock": true,
+    "canAddContext": true,
+    "canModifyInput": false,
+    "canModifyOutput": false
+  },
+  "session": {
+    "id": "test-session-parallel",
+    "path": "/tmp/test-parallel.jsonl",
+    "cwd": "/Users/terrchen/gsc-trigger-test"
+  },
+  "conversation": {
+    "leafId": "leaf-1",
+    "messageIds": ["msg-1", "msg-2"]
+  },
+  "model": {
+    "provider": "openai",
+    "id": "gpt-4",
+    "thinkingLevel": "off"
+  },
+  "payload": {
+    "toolCall": {
+      "id": "call-parallel-test",
+      "toolName": "edit",
+      "action": "edit",
+      "file": "/Users/terrchen/gsc-trigger-test/src/parallel/checkout.ts",
+      "command": null,
+      "input": {
+        "path": "src/parallel/checkout.ts",
+        "oldText": "old code",
+        "newText": "new code"
+      }
+    }
+  },
+  "repo": {
+    "root": "/Users/terrchen/gsc-trigger-test",
+    "normalizedFile": "src/parallel/checkout.ts"
+  },
+  "rule": {
+    "id": "parallel-test-rule",
+    "summary": "Parallel execution test",
+    "type": "tool-trigger",
+    "ruleHash": "sha256:parallel-test",
+    "triggerHash": "sha256:parallel-test-trigger",
+    "event": "pre_tool_use"
+  }
+}

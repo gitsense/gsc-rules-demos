@@ -1,0 +1,18 @@
+# Q1 2024 Accounting Ledger
+# Format: date | type | amount | account | reference
+
+2024-01-15 | DEBIT | 1500.00 | Operating Account | Invoice #1234
+2024-01-16 | CREDIT | 1500.00 | Revenue Account | Payment received - Client A
+2024-01-20 | DEBIT | 250.00 | Marketing Account | Google Ads - January
+2024-01-25 | CREDIT | 5000.00 | Operating Account | Invoice #1235 - Client B
+2024-02-01 | DEBIT | 1200.00 | Payroll Account | February salaries
+2024-02-05 | CREDIT | 5000.00 | Revenue Account | Payment received - Client B
+2024-02-10 | DEBIT | 150.00 | Utilities Account | Electric bill - January
+2024-02-15 | DEBIT | 75.00 | Office Supplies | Printer paper and toner
+2024-02-20 | CREDIT | 2500.00 | Operating Account | Invoice #1236 - Client C
+2024-03-01 | DEBIT | 1200.00 | Payroll Account | March salaries
+2024-03-05 | DEBIT | 300.00 | Marketing Account | LinkedIn Ads - Q1
+2024-03-10 | CREDIT | 2500.00 | Revenue Account | Payment received - Client C
+2024-03-15 | DEBIT | 200.00 | Insurance Account | Business liability insurance
+2024-03-20 | CREDIT | 7500.00 | Operating Account | Invoice #1237 - Client D
+2024-03-31 | DEBIT | 450.00 | Tax Account | Q1 estimated taxes

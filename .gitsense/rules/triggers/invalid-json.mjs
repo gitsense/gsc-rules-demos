@@ -1,0 +1,15 @@
+// Invalid JSON test trigger
+// Returns invalid JSON to test error handling
+
+const context = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));
+
+const file = context.payload?.toolCall?.file || '';
+
+// Only match files in errors directory
+if (!file.includes('/errors/')) {
+  console.log(JSON.stringify({ matched: false, block: false }));
+  process.exit(0);
+}
+
+// Output invalid JSON
+console.log('This is not valid JSON { broken: true');

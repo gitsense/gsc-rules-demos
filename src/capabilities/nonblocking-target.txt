@@ -1,0 +1,11 @@
+This file is used to test canBlock=false capability.
+
+When canBlock is false (e.g., post_tool_use, agent_end), a trigger cannot block the action.
+Instead, block=true should be converted to a notice.
+
+Test with direct gsc rules execute:
+- Set canBlock=false in the context
+- Trigger returns block=true
+- Expected: Action proceeds, notice is shown instead of blocking
+
+This is important for lifecycle events where blocking doesn't make sense.
