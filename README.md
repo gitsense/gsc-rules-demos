@@ -56,7 +56,7 @@ gsc rules execute \
   --rules <(gsc rules get --event pre_tool_use --action edit --file config/production.env --format rules-json)
 ```
 
-See [TESTING.md](TESTING.md) for detailed CLI test scenarios.
+See [SCRIPT-TESTING.md](SCRIPT-TESTING.md) for detailed CLI test scenarios.
 
 #### TUI Testing (Pi)
 
@@ -99,7 +99,7 @@ gsc-trigger-test/
 ├── docs/
 │   ├── parallel-execution.md     # Parallel execution documentation
 │   └── input-command-mapping.md  # Input command mapping guide
-├── TESTING.md               # Test scenarios and procedures
+├── SCRIPT-TESTING.md        # CLI test scenarios and procedures
 └── README.md                # This file
 ```
 
@@ -119,11 +119,11 @@ gsc-trigger-test/
 | 10 | canBlock=false | ❌ CLI only |
 | 11 | AI provenance ledger for third-party edits | ⚠️ Review scenario |
 
-See [TESTING.md](TESTING.md) for detailed descriptions.
+See [SCRIPT-TESTING.md](SCRIPT-TESTING.md) for detailed descriptions.
 
 ## Documentation
 
-- [TESTING.md](TESTING.md) - Complete test scenarios and procedures
+- [SCRIPT-TESTING.md](SCRIPT-TESTING.md) - CLI test scenarios and procedures
 - [docs/parallel-execution.md](docs/parallel-execution.md) - Parallel execution guide
 - [docs/input-command-mapping.md](docs/input-command-mapping.md) - Input command mapping guide
 
@@ -230,7 +230,7 @@ To add a new test scenario:
 1. Create the target file
 2. Create a trigger script in `.gitsense/rules/triggers/`
 3. Create a fixture if needed for direct CLI testing
-4. Add the scenario to [TESTING.md](TESTING.md)
+4. Add the scenario to [SCRIPT-TESTING.md](SCRIPT-TESTING.md)
 5. Update this README if needed
 
 ## License

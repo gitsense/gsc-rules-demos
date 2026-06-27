@@ -1,6 +1,6 @@
-# TESTING.md
+# SCRIPT-TESTING.md
 
-This document describes the test scenarios for the `gsc rules` system.
+CLI test scenarios for the `gsc rules` system. For TUI testing with Pi, see [TUI-TESTING.md](TUI-TESTING.md).
 
 ## Scenario Matrix
 
