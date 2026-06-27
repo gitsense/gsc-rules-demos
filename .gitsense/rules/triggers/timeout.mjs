@@ -1,7 +1,8 @@
 // Timeout test trigger
 // Sleeps for 30 seconds to trigger timeout
 
-const context = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));
+import { readFileSync } from 'node:fs';
+const context = JSON.parse(readFileSync(0, 'utf8'));
 
 const file = context.payload?.toolCall?.file || '';
 

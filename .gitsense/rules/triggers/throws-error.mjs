@@ -1,7 +1,8 @@
 // Error handling test trigger
 // Intentionally throws an error to test fail-open behavior
 
-const context = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));
+import { readFileSync } from 'node:fs';
+const context = JSON.parse(readFileSync(0, 'utf8'));
 
 const file = context.payload?.toolCall?.file || '';
 

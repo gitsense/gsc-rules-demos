@@ -113,18 +113,19 @@ See [TESTING.md](TESTING.md) for detailed descriptions.
 
 | Trigger | File | Purpose |
 |---------|------|---------|
-| accounting-check.mjs | data/accounting/** | Accounting file guidance |
-| deploy-guard.mjs | .github/workflows/deploy.yml | Deployment workflow protection |
-| generated-notice.mjs | src/generated/** | Auto-generated file warnings |
+| deploy-guard.mjs | .github/workflows/deploy.yml, config/** | Deployment workflow and config protection |
+| generated-notice.mjs | src/generated/**, src/capabilities/** | Auto-generated file warnings |
 | exit-alias-notice.mjs | user input "exit" | Exit command guidance |
 
 ### Test Triggers
 
 | Trigger | File | Purpose |
 |---------|------|---------|
+| accounting-check.mjs | data/accounting/** | Accounting file guidance (available but not wired to rule) |
 | parallel-slow-a.mjs | src/parallel/** | Parallel execution test (1000ms) |
 | parallel-slow-b.mjs | src/parallel/** | Parallel execution test (1000ms) |
 | parallel-slow-c.mjs | src/parallel/** | Parallel execution test (1000ms) |
+| frequency-test.mjs | src/frequency/** | Frequency mode test |
 | throws-error.mjs | src/errors/** | Error handling test |
 | invalid-json.mjs | src/errors/** | Invalid JSON handling test |
 | timeout.mjs | src/errors/** | Timeout handling test |

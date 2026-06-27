@@ -1,7 +1,8 @@
 // Accounting file read trigger
 // Inspects context to provide file-specific guidance
 
-const context = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));
+import { readFileSync } from 'node:fs';
+const context = JSON.parse(readFileSync(0, 'utf8'));
 
 const file = context.payload?.toolCall?.file || '';
 const action = context.payload?.toolCall?.action || '';

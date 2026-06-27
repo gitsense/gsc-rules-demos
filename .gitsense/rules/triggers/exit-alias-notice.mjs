@@ -1,7 +1,8 @@
 // Exit command alias trigger
 // Intercepts "exit" and shows guidance to use /quit instead
 
-const context = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));
+import { readFileSync } from 'node:fs';
+const context = JSON.parse(readFileSync(0, 'utf8'));
 
 const text = context.payload?.prompt?.text || '';
 
