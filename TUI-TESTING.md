@@ -22,6 +22,7 @@ Once Pi starts (optional - enable debug logging):
 
 **Rule ID:** `019f097d-9091-7e89-a871-aa786b7c4a0b`
 **Rule type:** Declarative (instruction-only)
+**Event:** `pre_tool_use` (fires when read tool executes, not when prompt is typed)
 **Frequency:** Once per rule hash (default for declarative rules)
 
 **Verify rule:**
@@ -35,9 +36,13 @@ read data/accounting/q1.ledger
 ```
 
 **Expected behavior:**
-- Pi blocks the read
-- Message includes: "This is a pipe-delimited accounting ledger"
-- Instructions mention: `gsc rg` and `gsc notes list --topic accounting`
+1. You type the prompt
+2. Pi processes it (LLM decides to call `read` tool)
+3. **Block happens when Pi tries to execute the read**
+4. Message includes: "This is a pipe-delimited accounting ledger"
+5. Instructions mention: `gsc rg` and `gsc notes list --topic accounting`
+
+**Important:** The block occurs at tool execution time, not at prompt time. You'll see Pi start to process, then get blocked when it tries to actually read the file.
 
 **Why second read succeeds:**
 Declarative rules use once-per-rule-hash delivery tracking. After the instructions are delivered once, pi-brains remembers the rule hash and skips the block on subsequent reads. This prevents repeated blocking for the same guidance.
@@ -55,6 +60,7 @@ read data/accounting/q1.ledger
 
 **Rule ID:** `019f0940-0155-742c-9bf0-7b0baf22b9c9`
 **Rule type:** Executable trigger
+**Event:** `pre_tool_use` (fires when edit tool executes)
 **Frequency:** Always (runs every time)
 
 **Verify rule:**
@@ -68,9 +74,11 @@ edit config/production.env to change APP_PORT to 9090
 ```
 
 **Expected behavior:**
-- Pi blocks the edit
-- Message includes: "CONFIG FILE GUARD"
-- Message mentions: "Production configuration changes require deployment approval"
+1. You type the prompt
+2. Pi processes it (LLM decides to call `edit` tool)
+3. **Block happens when Pi tries to execute the edit**
+4. Message includes: "CONFIG FILE GUARD"
+5. Message mentions: "Production configuration changes require deployment approval"
 
 ---
 
@@ -78,6 +86,7 @@ edit config/production.env to change APP_PORT to 9090
 
 **Rule ID:** `019f0721-044b-70bc-8719-318fa6adcd73`
 **Rule type:** Executable trigger
+**Event:** `pre_tool_use` (fires when edit tool executes)
 **Frequency:** Always (runs every time)
 
 **Verify rule:**
@@ -91,9 +100,11 @@ edit src/generated/types.ts to add a new field to User interface
 ```
 
 **Expected behavior:**
-- Pi shows warning notice: "WARNING: You are editing an auto-generated file"
-- Edit proceeds (not blocked)
-- Notice appears but Pi continues with the edit
+1. You type the prompt
+2. Pi processes it (LLM decides to call `edit` tool)
+3. **Notice appears when Pi tries to execute the edit**
+4. Warning: "WARNING: You are editing an auto-generated file"
+5. Edit proceeds (not blocked)
 
 ---
 
@@ -104,6 +115,7 @@ edit src/generated/types.ts to add a new field to User interface
 - `019f0721-8839-7487-837e-7a6abf082e66` (executable)
 
 **Rule types:** Declarative + Executable
+**Event:** `pre_tool_use` (fires when edit tool executes)
 **Frequency:** Always (runs every time)
 
 **Verify rules:**
@@ -118,11 +130,13 @@ edit .github/workflows/deploy.yml to add a new step
 ```
 
 **Expected behavior:**
-- Pi blocks the edit
-- Message includes BOTH:
-  - "Deployment workflow changes require DevOps team review"
-  - "DEPLOYMENT WORKFLOW GUARD"
-- Both rules appear in the matched-rule packet
+1. You type the prompt
+2. Pi processes it (LLM decides to call `edit` tool)
+3. **Block happens when Pi tries to execute the edit**
+4. Message includes BOTH:
+   - "Deployment workflow changes require DevOps team review"
+   - "DEPLOYMENT WORKFLOW GUARD"
+5. Both rules appear in the matched-rule packet
 
 ---
 
@@ -159,6 +173,7 @@ exit
 - `019f0722-2030-7a7a-ba6e-d8a75ac9cb51` (trigger C)
 
 **Rule type:** Executable trigger
+**Event:** `pre_tool_use` (fires when edit tool executes)
 **Frequency:** Always (runs every time)
 
 **Verify rules:**
@@ -174,11 +189,14 @@ edit src/parallel/checkout.ts to add a discount field
 ```
 
 **Expected behavior:**
-- Three notices appear (order may vary):
-  - "parallel-slow-a completed (1000ms delay)"
-  - "parallel-slow-b completed (1000ms delay)"
-  - "parallel-slow-c completed (1000ms delay)"
-- Edit proceeds after all three notices
+1. You type the prompt
+2. Pi processes it (LLM decides to call `edit` tool)
+3. **Notices appear when Pi tries to execute the edit**
+4. Three notices appear (order may vary):
+   - "parallel-slow-a completed (1000ms delay)"
+   - "parallel-slow-b completed (1000ms delay)"
+   - "parallel-slow-c completed (1000ms delay)"
+5. Edit proceeds after all three notices
 
 ---
 
@@ -190,6 +208,7 @@ edit src/parallel/checkout.ts to add a discount field
 - `019f0723-4090-7641-8fd9-5303f66b5a44` (low, priority 10)
 
 **Rule type:** Declarative
+**Event:** `pre_tool_use` (fires when edit tool executes)
 **Frequency:** Once per rule hash
 
 **Verify rules:**
@@ -205,10 +224,13 @@ edit src/priority/overlap.ts to add a new function
 ```
 
 **Expected behavior:**
-- Three instructions appear in priority order:
-  1. "This is a high priority instruction."
-  2. "This is a medium priority instruction."
-  3. "This is a low priority instruction."
+1. You type the prompt
+2. Pi processes it (LLM decides to call `edit` tool)
+3. **Instructions appear when Pi tries to execute the edit**
+4. Three instructions appear in priority order:
+   - "This is a high priority instruction."
+   - "This is a medium priority instruction."
+   - "This is a low priority instruction."
 
 ---
 
@@ -216,6 +238,7 @@ edit src/priority/overlap.ts to add a new function
 
 **Rule ID:** `019f073b-cc8c-7a61-8c94-b7d7b45ec396`
 **Rule type:** Executable trigger
+**Event:** `pre_tool_use` (fires when read tool executes)
 **Frequency:** Once per rule hash
 
 **Verify rule:**
@@ -229,7 +252,10 @@ read src/frequency/repeated-read.txt
 ```
 
 **Expected behavior:**
-- Notice appears: "Frequency test trigger executed for: src/frequency/repeated-read.txt"
+1. You type the prompt
+2. Pi processes it (LLM decides to call `read` tool)
+3. **Notice appears when Pi tries to execute the read**
+4. Notice: "Frequency test trigger executed for: src/frequency/repeated-read.txt"
 
 **Follow-up:**
 ```
@@ -248,6 +274,7 @@ read src/frequency/repeated-read.txt
 - `019f0722-99ac-72a8-9a97-694b3822e8a3` (timeout)
 
 **Rule type:** Executable trigger
+**Event:** `pre_tool_use` (fires when read tool executes)
 **Frequency:** Always (runs every time)
 
 **Verify rules:**
@@ -263,9 +290,11 @@ read src/errors/broken-trigger-target.txt
 ```
 
 **Expected behavior:**
-- Read succeeds (not blocked)
-- No error shown to user
-- Debug log shows error details
+1. You type the prompt
+2. Pi processes it (LLM decides to call `read` tool)
+3. **Read succeeds (not blocked)** - triggers fail open
+4. No error shown to user
+5. Debug log shows error details
 
 ---
 
@@ -290,6 +319,7 @@ gsc rules execute \
 - `019f094d-8ec0-7f31-9791-a63b697a9381` (agent_end)
 
 **Rule type:** Executable trigger
+**Event:** `post_tool_use` (fires after edit completes)
 **Frequency:** Always (runs every time)
 
 **Verify rules:**
@@ -304,9 +334,12 @@ edit third_party/vendor-widget.js to fix a bug
 ```
 
 **Expected behavior:**
-- Notice appears: "AI provenance entry created for third_party/vendor-widget.js"
-- Notice mentions updating `.gitsense/ai-provenance.jsonl`
-- Edit proceeds
+1. You type the prompt
+2. Pi processes it (LLM decides to call `edit` tool)
+3. **Notice appears AFTER the edit completes** (post_tool_use)
+4. Notice: "AI provenance entry created for third_party/vendor-widget.js"
+5. Notice mentions updating `.gitsense/ai-provenance.jsonl`
+6. Edit proceeds
 
 ---
 
