@@ -4,10 +4,10 @@
 import { readFileSync } from 'node:fs';
 const context = JSON.parse(readFileSync(0, 'utf8'));
 
-const text = context.payload?.prompt?.text || '';
+const text = (context.payload?.prompt?.text || '').trim();
 
-// Match "exit" command (with optional whitespace)
-if (/^\s*exit\s*$/.test(text)) {
+// Exact match for "exit" command
+if (text === 'exit') {
   console.log(JSON.stringify({
     matched: true,
     block: true,
