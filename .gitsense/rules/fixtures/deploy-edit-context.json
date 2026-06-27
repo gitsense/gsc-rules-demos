@@ -1,0 +1,55 @@
+{
+  "version": "1",
+  "debug": false,
+  "event": {
+    "name": "pre_tool_use",
+    "runtime": "pi",
+    "runtimeEvent": "tool_call"
+  },
+  "capabilities": {
+    "canBlock": true,
+    "canAddContext": true,
+    "canModifyInput": false,
+    "canModifyOutput": false
+  },
+  "session": {
+    "id": "test-session-deploy",
+    "path": "/tmp/test-deploy.jsonl",
+    "cwd": "/Users/terrchen/gsc-trigger-test"
+  },
+  "conversation": {
+    "leafId": "leaf-1",
+    "messageIds": ["msg-1"]
+  },
+  "model": {
+    "provider": "openai",
+    "id": "gpt-4",
+    "thinkingLevel": "off"
+  },
+  "payload": {
+    "toolCall": {
+      "id": "call-deploy-test",
+      "toolName": "edit",
+      "action": "edit",
+      "file": "/Users/terrchen/gsc-trigger-test/.github/workflows/deploy.yml",
+      "command": null,
+      "input": {
+        "path": ".github/workflows/deploy.yml",
+        "oldText": "old workflow",
+        "newText": "new workflow"
+      }
+    }
+  },
+  "repo": {
+    "root": "/Users/terrchen/gsc-trigger-test",
+    "normalizedFile": ".github/workflows/deploy.yml"
+  },
+  "rule": {
+    "id": "deploy-test-rule",
+    "summary": "Deploy workflow edit test",
+    "type": "tool-trigger",
+    "ruleHash": "sha256:deploy-test",
+    "triggerHash": "sha256:deploy-test-trigger",
+    "event": "pre_tool_use"
+  }
+}

@@ -4,7 +4,8 @@
 import { readFileSync } from 'node:fs';
 const context = JSON.parse(readFileSync(0, 'utf8'));
 
-const file = context.payload?.toolCall?.file || '';
+const toolCall = context.toolCall || context.payload?.toolCall || {};
+const file = toolCall.file || '';
 
 // Only match files in errors directory
 if (!file.includes('/errors/')) {

@@ -1,0 +1,55 @@
+{
+  "version": "1",
+  "debug": false,
+  "event": {
+    "name": "pre_tool_use",
+    "runtime": "pi",
+    "runtimeEvent": "tool_call"
+  },
+  "capabilities": {
+    "canBlock": true,
+    "canAddContext": true,
+    "canModifyInput": false,
+    "canModifyOutput": false
+  },
+  "session": {
+    "id": "test-session-generated",
+    "path": "/tmp/test-generated.jsonl",
+    "cwd": "/Users/terrchen/gsc-trigger-test"
+  },
+  "conversation": {
+    "leafId": "leaf-1",
+    "messageIds": ["msg-1"]
+  },
+  "model": {
+    "provider": "openai",
+    "id": "gpt-4",
+    "thinkingLevel": "off"
+  },
+  "payload": {
+    "toolCall": {
+      "id": "call-generated-test",
+      "toolName": "edit",
+      "action": "edit",
+      "file": "/Users/terrchen/gsc-trigger-test/src/generated/types.ts",
+      "command": null,
+      "input": {
+        "path": "src/generated/types.ts",
+        "oldText": "old type",
+        "newText": "new type"
+      }
+    }
+  },
+  "repo": {
+    "root": "/Users/terrchen/gsc-trigger-test",
+    "normalizedFile": "src/generated/types.ts"
+  },
+  "rule": {
+    "id": "generated-test-rule",
+    "summary": "Generated file edit test",
+    "type": "tool-trigger",
+    "ruleHash": "sha256:generated-test",
+    "triggerHash": "sha256:generated-test-trigger",
+    "event": "pre_tool_use"
+  }
+}

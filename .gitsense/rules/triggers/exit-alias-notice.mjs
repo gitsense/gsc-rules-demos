@@ -11,7 +11,8 @@ if (/^\s*exit\s*$/.test(text)) {
   console.log(JSON.stringify({
     matched: true,
     block: true,
-    notice: "Pi uses /quit to exit. Type /quit or press Ctrl+D."
+    message: "Pi uses /quit to exit. Type /quit or press Ctrl+D.",
+    notice: "Input intercepted: 'exit' is not a valid Pi command. Use /quit or Ctrl+D."
   }));
 } else {
   console.log(JSON.stringify({ matched: false, block: false }));

@@ -1,0 +1,48 @@
+{
+  "version": "1",
+  "debug": false,
+  "event": {
+    "name": "agent_end",
+    "runtime": "pi",
+    "runtimeEvent": "agent_end"
+  },
+  "capabilities": {
+    "canBlock": false,
+    "canAddContext": true,
+    "canModifyInput": false,
+    "canModifyOutput": false
+  },
+  "session": {
+    "id": "test-session-provenance",
+    "path": "/tmp/test-provenance.jsonl",
+    "cwd": "/Users/terrchen/gsc-trigger-test"
+  },
+  "conversation": {
+    "leafId": "leaf-provenance-2",
+    "messageIds": ["msg-1", "msg-2", "msg-3"]
+  },
+  "model": {
+    "provider": "openai",
+    "id": "gpt-5-codex",
+    "thinkingLevel": "medium"
+  },
+  "payload": {
+    "stop": {
+      "sessionPath": "/tmp/test-provenance.jsonl",
+      "messageCount": 3,
+      "turnCount": 1
+    }
+  },
+  "repo": {
+    "root": "/Users/terrchen/gsc-trigger-test",
+    "normalizedFile": null
+  },
+  "rule": {
+    "id": "ai-provenance-agent-end",
+    "summary": "Remind about pending AI provenance entries",
+    "type": "tool-trigger",
+    "ruleHash": "sha256:ai-provenance-agent-end",
+    "triggerHash": "sha256:ai-provenance-agent-end-trigger",
+    "event": "agent_end"
+  }
+}

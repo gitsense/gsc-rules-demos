@@ -4,8 +4,9 @@
 import { readFileSync } from 'node:fs';
 const context = JSON.parse(readFileSync(0, 'utf8'));
 
-const file = context.payload?.toolCall?.file || '';
-const action = context.payload?.toolCall?.action || '';
+const toolCall = context.toolCall || context.payload?.toolCall || {};
+const file = toolCall.file || '';
+const action = toolCall.action || toolCall.toolName || '';
 
 // Only match accounting ledger files
 if (!file.includes('accounting') || !file.endsWith('.ledger')) {

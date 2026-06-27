@@ -1,0 +1,53 @@
+{
+  "version": "1",
+  "debug": false,
+  "event": {
+    "name": "pre_tool_use",
+    "runtime": "pi",
+    "runtimeEvent": "tool_call"
+  },
+  "capabilities": {
+    "canBlock": true,
+    "canAddContext": true,
+    "canModifyInput": false,
+    "canModifyOutput": false
+  },
+  "session": {
+    "id": "test-session-frequency",
+    "path": "/tmp/test-frequency.jsonl",
+    "cwd": "/Users/terrchen/gsc-trigger-test"
+  },
+  "conversation": {
+    "leafId": "leaf-1",
+    "messageIds": ["msg-1"]
+  },
+  "model": {
+    "provider": "openai",
+    "id": "gpt-4",
+    "thinkingLevel": "off"
+  },
+  "payload": {
+    "toolCall": {
+      "id": "call-frequency-test",
+      "toolName": "read",
+      "action": "read",
+      "file": "/Users/terrchen/gsc-trigger-test/src/frequency/repeated-read.txt",
+      "command": null,
+      "input": {
+        "path": "src/frequency/repeated-read.txt"
+      }
+    }
+  },
+  "repo": {
+    "root": "/Users/terrchen/gsc-trigger-test",
+    "normalizedFile": "src/frequency/repeated-read.txt"
+  },
+  "rule": {
+    "id": "frequency-test-rule",
+    "summary": "Frequency test",
+    "type": "tool-trigger",
+    "ruleHash": "sha256:frequency-test",
+    "triggerHash": "sha256:frequency-test-trigger",
+    "event": "pre_tool_use"
+  }
+}

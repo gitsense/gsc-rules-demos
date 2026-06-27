@@ -4,10 +4,14 @@
 import { readFileSync } from 'node:fs';
 const context = JSON.parse(readFileSync(0, 'utf8'));
 
-const file = context.payload?.toolCall?.file || '';
+const toolCall = context.toolCall || context.payload?.toolCall || {};
+const file = toolCall.file || '';
 
 // Only match files in frequency directory
-if (!file.includes('/frequency/')) {
+// Check both absolute path and normalized path
+const normalizedFile = context.repo?.normalizedFile || '';
+if (!file.includes('/frequency/') && !normalizedFile.includes('/frequency/') &&
+    !normalizedFile.startsWith('src/frequency/')) {
   console.log(JSON.stringify({ matched: false, block: false }));
   process.exit(0);
 }

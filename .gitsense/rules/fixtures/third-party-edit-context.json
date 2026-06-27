@@ -1,0 +1,54 @@
+{
+  "version": "1",
+  "debug": false,
+  "event": {
+    "name": "post_tool_use",
+    "runtime": "pi",
+    "runtimeEvent": "tool_result"
+  },
+  "capabilities": {
+    "canBlock": false,
+    "canAddContext": true,
+    "canModifyInput": false,
+    "canModifyOutput": true
+  },
+  "session": {
+    "id": "test-session-provenance",
+    "path": "/tmp/test-provenance.jsonl",
+    "cwd": "/Users/terrchen/gsc-trigger-test"
+  },
+  "conversation": {
+    "leafId": "leaf-provenance-1",
+    "messageIds": ["msg-1", "msg-2"]
+  },
+  "model": {
+    "provider": "openai",
+    "id": "gpt-5-codex",
+    "thinkingLevel": "medium"
+  },
+  "payload": {
+    "toolResult": {
+      "toolName": "edit",
+      "toolCallId": "call-third-party-edit",
+      "input": {
+        "path": "third_party/vendor-widget.js",
+        "oldText": "return input;",
+        "newText": "return String(input).trim();"
+      },
+      "content": [{ "type": "text", "text": "File edited successfully" }],
+      "isError": false
+    }
+  },
+  "repo": {
+    "root": "/Users/terrchen/gsc-trigger-test",
+    "normalizedFile": "third_party/vendor-widget.js"
+  },
+  "rule": {
+    "id": "ai-provenance-post-tool",
+    "summary": "Record AI third-party edits",
+    "type": "tool-trigger",
+    "ruleHash": "sha256:ai-provenance-post-tool",
+    "triggerHash": "sha256:ai-provenance-post-tool-trigger",
+    "event": "post_tool_use"
+  }
+}

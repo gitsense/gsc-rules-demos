@@ -98,6 +98,7 @@ gsc-trigger-test/
 | 8 | Frequency modes | ⚠️ CLI first |
 | 9 | Error handling | ✅ Supported |
 | 10 | canBlock=false | ❌ CLI only |
+| 11 | AI provenance ledger for third-party edits | ⚠️ Review scenario |
 
 See [TESTING.md](TESTING.md) for detailed descriptions.
 
@@ -129,6 +130,8 @@ See [TESTING.md](TESTING.md) for detailed descriptions.
 | throws-error.mjs | src/errors/** | Error handling test |
 | invalid-json.mjs | src/errors/** | Invalid JSON handling test |
 | timeout.mjs | src/errors/** | Timeout handling test |
+| ai-provenance-post-tool.mjs | third_party/** | Append pending AI provenance ledger entries |
+| ai-provenance-agent-end.mjs | agent_end | Remind about unresolved provenance entries |
 
 ## Fixtures
 
@@ -137,6 +140,8 @@ See [TESTING.md](TESTING.md) for detailed descriptions.
 | parallel-edit-context.json | Parallel execution CLI test |
 | can-block-false-context.json | canBlock=false capability test |
 | prompt-submit-context.json | Prompt interception test |
+| third-party-edit-context.json | AI provenance post_tool_use test |
+| agent-end-context.json | AI provenance agent_end reminder test |
 
 ## Contributing
 

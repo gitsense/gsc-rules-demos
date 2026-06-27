@@ -4,11 +4,16 @@
 import { readFileSync } from 'node:fs';
 const context = JSON.parse(readFileSync(0, 'utf8'));
 
-const file = context.payload?.toolCall?.file || '';
-const action = context.payload?.toolCall?.action || '';
+const toolCall = context.toolCall || context.payload?.toolCall || {};
+const file = toolCall.file || '';
+const action = toolCall.action || toolCall.toolName || '';
 
 // Only match files in generated directories
-if (!file.includes('/generated/') && !file.includes('/auto-generated/')) {
+// Check both absolute path and normalized path
+const normalizedFile = context.repo?.normalizedFile || '';
+if (!file.includes('/generated/') && !file.includes('/auto-generated/') &&
+    !normalizedFile.includes('/generated/') && !normalizedFile.includes('/auto-generated/') &&
+    !normalizedFile.startsWith('src/generated/')) {
   console.log(JSON.stringify({ matched: false, block: false }));
   process.exit(0);
 }

@@ -4,11 +4,15 @@
 import { readFileSync } from 'node:fs';
 const context = JSON.parse(readFileSync(0, 'utf8'));
 
-const file = context.payload?.toolCall?.file || '';
-const action = context.payload?.toolCall?.action || '';
+const toolCall = context.toolCall || context.payload?.toolCall || {};
+const file = toolCall.file || '';
+const action = toolCall.action || toolCall.toolName || '';
 
 // Only match deployment workflow files
-if (!file.includes('.github/workflows') || !file.includes('deploy')) {
+// Check both absolute path and normalized path
+const normalizedFile = context.repo?.normalizedFile || '';
+if ((!file.includes('.github/workflows') || !file.includes('deploy')) &&
+    (!normalizedFile.includes('.github/workflows') || !normalizedFile.includes('deploy'))) {
   console.log(JSON.stringify({ matched: false, block: false }));
   process.exit(0);
 }
