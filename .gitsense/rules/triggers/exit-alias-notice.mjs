@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 const context = JSON.parse(readFileSync(0, 'utf8'));
 
 const text = (context.payload?.prompt?.text || '').trim();
-const ruleId = context.rule?.id || '019f0722-cd4b';
+const ruleId = context.rule?.id || 'rule_019f0722-cd4b-76a1-b43a-5bd8a23c9359';
 
 // Exact match for "exit" command
 if (text === 'exit') {
