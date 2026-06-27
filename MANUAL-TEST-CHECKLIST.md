@@ -7,9 +7,10 @@ Use this checklist when testing rules in Pi TUI.
 ```bash
 cd ~/gsc-trigger-test
 pi
-/brains rules on
-/brains debug on
+/brains debug on  # Optional - enables file-based debug logging
 ```
+
+**Note:** Rules are enabled by default. No need to run `/brains rules on`.
 
 ---
 

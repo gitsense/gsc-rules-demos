@@ -9,11 +9,12 @@ cd ~/gsc-trigger-test
 pi
 ```
 
-Once Pi starts:
+Once Pi starts (optional - enable debug logging):
 ```
-/brains rules on
 /brains debug on
 ```
+
+**Note:** Rules are enabled by default. No need to run `/brains rules on`.
 
 ---
 
