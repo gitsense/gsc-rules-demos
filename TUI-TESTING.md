@@ -20,6 +20,9 @@ Once Pi starts (optional - enable debug logging):
 
 ## Test 1: Declarative Read Block
 
+**Rule type:** Declarative (instruction-only)
+**Frequency:** Once per rule hash (default for declarative rules)
+
 **Prompt:**
 ```
 read data/accounting/q1.ledger
@@ -30,11 +33,15 @@ read data/accounting/q1.ledger
 - Message includes: "This is a pipe-delimited accounting ledger"
 - Instructions mention: `gsc query --file data/accounting/q1.ledger --topic accounting`
 
+**Why second read succeeds:**
+Declarative rules use once-per-rule-hash delivery tracking. After the instructions are delivered once, pi-brains remembers the rule hash and skips the block on subsequent reads. This prevents repeated blocking for the same guidance.
+
 **Follow-up:**
 ```
 read data/accounting/q1.ledger
 ```
-- Second read should succeed (instructions already delivered)
+- Second read should succeed immediately (no block)
+- Instructions were already delivered in the first read
 
 ---
 

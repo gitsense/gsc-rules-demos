@@ -35,24 +35,43 @@ gsc rules new --event pre_tool_use --action read --glob "data/accounting/**" \
   --instruction "This is a pipe-delimited ledger. Use gsc query for metadata."
 ```
 
-### Running Tests
+### Testing
 
-See [TESTING.md](TESTING.md) for detailed test scenarios.
+There are two ways to test the rules:
 
-Quick tests:
+#### Script Testing (CLI)
+
+Use `gsc rules execute` to test trigger logic without Pi. This verifies rules match and triggers return correct responses.
 
 ```bash
-# Test parallel execution
+# Test parallel execution timing
 ./scripts/test-parallel-execute.sh
 
 # Test a specific rule
 gsc rules get --event pre_tool_use --action read --file data/accounting/q1.ledger
 
-# Test with direct execution
+# Test trigger execution
 gsc rules execute \
-  --context .gitsense/rules/fixtures/parallel-edit-context.json \
-  --rules <(gsc rules get --event pre_tool_use --action edit --file src/parallel/checkout.ts --format rules-json)
+  --context .gitsense/rules/fixtures/config-edit-context.json \
+  --rules <(gsc rules get --event pre_tool_use --action edit --file config/production.env --format rules-json)
 ```
+
+See [TESTING.md](TESTING.md) for detailed CLI test scenarios.
+
+#### TUI Testing (Pi)
+
+Use Pi TUI to verify rules affect the actual agent behavior - blocking, notices, and UI rendering.
+
+```bash
+cd ~/gsc-trigger-test
+pi
+```
+
+See [TUI-TESTING.md](TUI-TESTING.md) for step-by-step TUI test prompts.
+
+**Why both?**
+- Script tests verify trigger logic and timing
+- TUI tests verify the rules actually block/notify in the agent interface
 
 ## Repository Structure
 
