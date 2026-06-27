@@ -26,6 +26,8 @@ type CheckoutRequest = z.infer<typeof CheckoutRequestSchema>;
 interface CheckoutResult {
   orderId: string;
   status: 'pending' | 'confirmed' | 'failed';
+  subtotal: number;
+  discount: number;
   total: number;
   estimatedDelivery: string;
   items: CartItem[];
@@ -52,6 +54,8 @@ export async function processCheckout(request: unknown): Promise<CheckoutResult>
   return {
     orderId,
     status: 'confirmed',
+    subtotal: Math.round(subtotal * 100) / 100,
+    discount: Math.round(discount * 100) / 100,
     total: Math.round(total * 100) / 100,
     estimatedDelivery,
     items: parsed.items,

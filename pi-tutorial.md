@@ -255,12 +255,12 @@ edit src/parallel/checkout.ts to add a discount field
 2. Pi processes it (LLM decides to call `edit` tool)
 3. **Notices appear when Pi tries to execute the edit**
 4. Three notices appear (order may vary):
-   - "parallel-slow-a completed (1000ms delay)"
-   - "parallel-slow-b completed (1000ms delay)"
-   - "parallel-slow-c completed (1000ms delay)"
+   - "parallel-slow-a completed (~500ms actual, 500ms target)"
+   - "parallel-slow-b completed (~1000ms actual, 1000ms target)"
+   - "parallel-slow-c completed (~1500ms actual, 1500ms target)"
 5. Edit proceeds after all three notices
 
-**Note:** Each trigger sleeps for 1000ms, but they run in parallel so total time is ~1000ms, not 3000ms.
+**Note:** The triggers have different sleep times (500ms, 1000ms, 1500ms), but they run in parallel so total time is ~1500ms (the longest), not 3000ms (the sum).
 
 ---
 
