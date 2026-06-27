@@ -40,7 +40,7 @@ read data/accounting/q1.ledger
 2. Pi processes it (LLM decides to call `read` tool)
 3. **Block happens when Pi tries to execute the read**
 4. Message includes: "This is a pipe-delimited accounting ledger"
-5. Instructions mention: `gsc rg` and `gsc notes list --topic accounting`
+5. Instructions mention: "Check if there are relevant notes for this file"
 
 **Important:** The block occurs at tool execution time, not at prompt time. You'll see Pi start to process, then get blocked when it tries to actually read the file.
 
@@ -56,7 +56,7 @@ read data/accounting/q1.ledger
 
 ---
 
-## Test 2: Executable Edit Block
+## Test 2: Executable Edit Block (with Environment Variable Bypass)
 
 **Rule ID:** `019f0940-0155-742c-9bf0-7b0baf22b9c9`
 **Rule type:** Executable trigger
@@ -66,6 +66,18 @@ read data/accounting/q1.ledger
 **Verify rule:**
 ```bash
 gsc rules show 019f0940-0155
+```
+
+### Part A: Without approval (should block)
+
+**Setup:** Make sure the environment variable is NOT set:
+```bash
+unset AI_CONFIG_EDIT_APPROVED
+```
+
+Start Pi:
+```bash
+pi
 ```
 
 **Prompt:**
@@ -79,6 +91,32 @@ edit config/production.env to change APP_PORT to 9090
 3. **Block happens when Pi tries to execute the edit**
 4. Message includes: "CONFIG FILE GUARD"
 5. Message mentions: "Production configuration changes require deployment approval"
+6. Message includes instructions to set `AI_CONFIG_EDIT_APPROVED=true`
+
+### Part B: With approval (should allow with notice)
+
+**Setup:** Exit Pi (type `/quit`), then set the environment variable and restart:
+```bash
+export AI_CONFIG_EDIT_APPROVED=true
+pi
+```
+
+**Prompt:**
+```
+edit config/production.env to change APP_PORT to 9090
+```
+
+**Expected behavior:**
+1. You type the prompt
+2. Pi processes it (LLM decides to call `edit` tool)
+3. **Edit proceeds (not blocked)**
+4. Notice appears: "CONFIG FILE GUARD: Override detected (AI_CONFIG_EDIT_APPROVED=true)"
+5. Edit completes successfully
+
+**Cleanup:** After testing, unset the variable:
+```bash
+unset AI_CONFIG_EDIT_APPROVED
+```
 
 ---
 
@@ -96,7 +134,7 @@ gsc rules show 019f0721-044b
 
 **Prompt:**
 ```
-edit src/generated/types.ts to add a new field to User interface
+edit src/generated/types.ts to add a nickname field to User interface for testing the auto-generated file warning
 ```
 
 **Expected behavior:**

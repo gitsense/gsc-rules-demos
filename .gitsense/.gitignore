@@ -1,7 +1,7 @@
 # This file is programmatically generated. DO NOT EDIT MANUALLY.
 # To regenerate, run: gsc gitignore update
 #
-# Generated on: 2026-06-26T23:26:40-04:00
+# Generated on: 2026-06-27T11:41:05-04:00
 
 # core
 # SQLite database files
@@ -56,6 +56,8 @@ manifests/gsc-lessons.json
 # rules
 # Generated rules manifest (derived from records.jsonl, rebuild with: gsc rules build)
 manifests/gsc-rules.json
+# Trigger debug output directory
+debug/
 
 # notes
 # Generated notes manifest (derived from records.jsonl, rebuild with: gsc notes build)
