@@ -143,6 +143,67 @@ See [TESTING.md](TESTING.md) for detailed descriptions.
 | third-party-edit-context.json | AI provenance post_tool_use test |
 | agent-end-context.json | AI provenance agent_end reminder test |
 
+## Creating Triggers
+
+### Context Structure
+
+**Important:** `gsc rules execute` transforms the context before passing it to triggers. The `toolCall` and `toolResult` fields are at the **top level**, not inside `payload`.
+
+**What you provide (V1ExecutionContext):**
+```json
+{
+  "payload": {
+    "toolCall": { "file": "/path/to/file", "action": "edit" }
+  }
+}
+```
+
+**What the trigger receives (V1TriggerContext):**
+```json
+{
+  "toolCall": { "file": "/path/to/file", "action": "edit" },
+  "payload": { "prompt": { ... }, "toolResult": { ... } }
+}
+```
+
+### Trigger Template
+
+Use this pattern for compatibility with both `gsc rules execute` and direct testing:
+
+```javascript
+import { readFileSync } from 'node:fs';
+const context = JSON.parse(readFileSync(0, 'utf8'));
+
+// toolCall is at top level in gsc, but may be in payload for direct testing
+const toolCall = context.toolCall || context.payload?.toolCall || {};
+const toolResult = context.toolResult || context.payload?.toolResult || {};
+const file = toolCall.file || toolResult.input?.path || '';
+const action = toolCall.action || toolCall.toolName || '';
+
+// Match logic
+if (!file.includes('your-pattern')) {
+  console.log(JSON.stringify({ matched: false, block: false }));
+  process.exit(0);
+}
+
+// Response
+console.log(JSON.stringify({
+  matched: true,
+  block: true,  // or false for notice-only
+  message: "Your message here"  // or notice for notice-only
+}));
+```
+
+### Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `matched` | boolean | Whether the trigger matched the context |
+| `block` | boolean | Whether to block the action (forced to false when `canBlock=false`) |
+| `message` | string | Message shown when blocking |
+| `notice` | string | Notice shown without blocking |
+| `deliveryMode` | string | `"steer"`, `"followUp"`, or `"passiveSteer"` |
+
 ## Contributing
 
 To add a new test scenario:

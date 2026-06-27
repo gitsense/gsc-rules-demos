@@ -246,11 +246,16 @@ gsc rules execute \
 
 ### Trigger Script Template
 
-```javascript
-const context = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));
+**Important:** `gsc rules execute` transforms the context before passing it to triggers. The `toolCall` field is at the **top level**, not inside `payload`. Use this pattern for compatibility:
 
-const file = context.payload?.toolCall?.file || '';
-const action = context.payload?.toolCall?.action || '';
+```javascript
+import { readFileSync } from 'node:fs';
+const context = JSON.parse(readFileSync(0, 'utf8'));
+
+// toolCall is at top level in gsc, but may be in payload for direct testing
+const toolCall = context.toolCall || context.payload?.toolCall || {};
+const file = toolCall.file || '';
+const action = toolCall.action || toolCall.toolName || '';
 
 // Match logic
 if (!file.includes('your-pattern')) {
