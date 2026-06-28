@@ -9,7 +9,14 @@ cd ~/gsc-trigger-test
 pi
 ```
 
-Once Pi starts (optional - enable debug logging):
+Once Pi starts, initialize the expert context:
+```
+/brains
+```
+
+This teaches the agent how to use `gsc` commands (required for Examples 10-11).
+
+Optional - enable debug logging:
 ```
 /brains debug on
 ```
