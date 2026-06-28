@@ -363,10 +363,13 @@ read src/errors/broken-trigger-target.txt
 1. You type the prompt
 2. Pi processes it (LLM decides to call `read` tool)
 3. **Read succeeds (not blocked)** - triggers fail open
-4. No error shown to user
-5. Debug log shows error details
+4. Warning notices appear for each failed trigger:
+   - `Trigger error (rule_019f0722-5c8c...): Intentional error for testing... - Action proceeding (fail-open)`
+   - `Trigger error (rule_019f0722-795b...): Unexpected token... - Action proceeding (fail-open)`
+   - `Trigger error (rule_019f0722-99ac...): Trigger timed out after 5000ms - Action proceeding (fail-open)`
+5. Debug log shows full error details
 
-**Why this matters:** If a trigger has a bug, it shouldn't prevent developers from working. The system is designed to be resilient.
+**Why this matters:** If a trigger has a bug, it shouldn't prevent developers from working. The system is designed to be resilient. Error notices help you identify and fix broken triggers without blocking work.
 
 ---
 
