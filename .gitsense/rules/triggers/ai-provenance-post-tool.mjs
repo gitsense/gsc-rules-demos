@@ -62,9 +62,10 @@ appendFileSync(ledgerPath, `${JSON.stringify(entry)}\n`);
 
 const message = [
   `AI provenance entry created for ${normalizedFile}.`,
-  `Update .gitsense/ai-provenance.jsonl entry ${entry.id} before finishing:`,
+  `Edit .gitsense/ai-provenance.jsonl to update entry ${entry.id}:`,
   `- [ ] Replace the TODO summary with a description of why this change was made`,
   `- [ ] Set status to "complete"`,
+  `Use the edit tool to make these changes directly in the file.`,
 ].join("\n");
 
 console.log(JSON.stringify({
