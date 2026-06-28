@@ -286,7 +286,7 @@ gsc rules show 019f0723-4090 --format json
 
 **Prompt:**
 ```
-edit src/priority/overlap.ts to add a new function
+edit src/priority/overlap.ts to add a cloneConfig function that returns a deep copy of a Config object
 ```
 
 **Expected behavior:**
