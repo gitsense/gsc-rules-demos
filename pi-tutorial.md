@@ -413,12 +413,29 @@ edit third_party/vendor-widget.js to add input validation to the normalizeVendor
 
 **What you'll learn:** How to use `steer` delivery mode to force the agent to respond immediately, creating mandatory obligations.
 
-**Rule ID:** `019f094d-9a10-7dfb-a76a-f11b9360a502` (you'll create this)
 **Rule type:** Executable trigger
 **Event:** `post_tool_use`
 **Delivery mode:** `steer` (forces agent to respond)
 
-### Create the rule
+### Quick Setup (Ask the Agent)
+
+The easiest way to set up this example is to ask the agent:
+
+```
+Create a rule that verifies TypeScript compilation after editing .ts files. Use steer delivery mode so the agent must fix compilation errors before continuing.
+```
+
+The agent will:
+1. Create the rule with `gsc rules new`
+2. Create the trigger file
+3. Update the rule to use the trigger
+
+### Manual Setup (If Needed)
+
+<details>
+<summary>Click to expand manual setup steps</summary>
+
+#### 1. Create the rule
 
 ```bash
 gsc rules new \
@@ -426,11 +443,10 @@ gsc rules new \
   --action edit \
   --glob "src/**/*.ts" \
   --summary "TypeScript edit verification" \
-  --instruction "After editing TypeScript files, verify the changes compile successfully." \
-  --action edit
+  --instruction "After editing TypeScript files, verify the changes compile successfully."
 ```
 
-### Create the trigger
+#### 2. Create the trigger
 
 Save as `.gitsense/rules/triggers/typescript-verify.mjs`:
 
@@ -482,7 +498,7 @@ if (compileResult === 'success') {
 }
 ```
 
-### Update the rule to use the trigger
+#### 3. Update the rule to use the trigger
 
 ```bash
 gsc rules update --id <rule-id> \
@@ -490,11 +506,13 @@ gsc rules update --id <rule-id> \
   --trigger-entry typescript-verify.mjs
 ```
 
-### Test it
+</details>
+
+### Test It
 
 **Prompt:**
 ```
-edit src/example.ts to add a new function
+edit src/example.ts to add a new function that returns a greeting message
 ```
 
 **Expected behavior:**
@@ -504,9 +522,9 @@ edit src/example.ts to add a new function
 4. Trigger checks if TypeScript compiles
 5. If compilation fails, trigger sends `steer` message: "TypeScript compilation failed..."
 6. **Agent must respond** to the steer message (cannot ignore)
-7. Agent fixes the compilation errors
+7. Agent fixes the compilation errors before continuing
 
-### Why this is aggressive
+### Why This Is Aggressive
 
 | Mode | Behavior | Agent Can Ignore? |
 |------|----------|-------------------|
