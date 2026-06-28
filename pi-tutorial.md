@@ -382,7 +382,7 @@ read src/errors/broken-trigger-target.txt
 - `019f094d-8ec0-7f31-9791-a63b697a9381` (agent_end)
 
 **Rule type:** Executable trigger
-**Event:** `post_tool_use` (fires after edit completes)
+**Events:** `post_tool_use` (records the edit) and `agent_end` (verifies completion)
 **Frequency:** Always (runs every time)
 
 **Explore the rules:**
@@ -399,10 +399,13 @@ edit third_party/vendor-widget.js to add input validation to the normalizeVendor
 **Expected behavior:**
 1. You type the prompt
 2. Pi processes it (LLM decides to call `edit` tool)
-3. **Notice appears AFTER the edit completes** (post_tool_use)
-4. Notice: "AI provenance entry created for third_party/vendor-widget.js"
-5. Notice mentions updating `.gitsense/ai-provenance.jsonl`
-6. Edit proceeds
+3. **The edit completes first**, then the `post_tool_use` trigger appends a pending entry to `.gitsense/ai-provenance.jsonl`
+4. A notice appears: "AI provenance entry created for third_party/vendor-widget.js"
+5. The trigger queues passive guidance telling the agent to update the ledger entry, replace the TODO summary, and set `status` to `"complete"`
+6. If the agent completes the ledger entry before finishing, `agent_end` shows an info notice that provenance is complete
+7. If the agent does not complete it, `agent_end` shows a warning notice and queues passive guidance for the next real user turn
+
+**Why this matters:** This example demonstrates stateful audit obligations with passive persistence. The `passiveSteer` delivery mode creates an obligation without forcing the agent to respond immediately. The `agent_end` trigger verifies completion without creating self-waking loops. If the agent doesn't complete the provenance entry, the guidance persists into the next real user turn.
 
 ---
 
