@@ -16,7 +16,7 @@ CLI test scenarios for the `gsc rules` system. For TUI testing with Pi, see [TUI
 | 8 | Frequency modes | `read src/frequency/repeated-read.txt` | Trigger with frequency=once | First read triggers, subsequent skip | ⚠️ CLI first | Old delivery tracker not active path |
 | 9 | Error handling | `read src/errors/broken-trigger-target.txt` | Error-throwing trigger | Fail-open, no block | ✅ Supported | Error logged |
 | 10 | canBlock=false | Direct fixture test | Trigger with canBlock=false | Block forced to notice | ❌ CLI only | Pi sets canBlock=true for pre_tool_use |
-| 11 | AI provenance ledger | `edit third_party/vendor-widget.js` | post_tool_use trigger appends ledger entry; agent_end reports pending entry | Agent gets a provenance completion reminder | ⚠️ Review scenario | Demonstrates stateful triggers and follow-up steering |
+| 11 | AI provenance ledger | `edit third_party/vendor-widget.js` | post_tool_use trigger appends ledger entry; agent_end verifies completion | Warning notice plus passive next-turn guidance if pending | ⚠️ Review scenario | Demonstrates stateful triggers without follow-up loops |
 
 ## Status Legend
 
@@ -221,8 +221,11 @@ edit third_party/vendor-widget.js
 **Expected behavior:**
 - After a successful edit/write, `.gitsense/ai-provenance.jsonl` is created if needed
 - A pending JSONL entry is appended with timestamp, session id, leaf id, tool call id, file path, action, model, and file hash
+- If a pending entry already exists for the same session and file, the post-tool trigger stays quiet instead of appending duplicates
 - The trigger sends a passive steering message asking the agent to replace the TODO summary and set `status` to `"complete"`
-- At `agent_end`, unresolved entries for the same session are reported as a follow-up reminder
+- At `agent_end`, completed entries produce an info notice
+- At `agent_end`, unresolved entries produce a warning notice and `passiveSteer` guidance for the next real user turn
+- The `agent_end` trigger must not use `followUp`, so it cannot create a self-waking reminder loop
 
 **Direct CLI test:**
 ```bash

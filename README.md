@@ -149,8 +149,8 @@ See [SCRIPT-TESTING.md](SCRIPT-TESTING.md) for detailed descriptions.
 | throws-error.mjs | src/errors/** | Error handling test |
 | invalid-json.mjs | src/errors/** | Invalid JSON handling test |
 | timeout.mjs | src/errors/** | Timeout handling test |
-| ai-provenance-post-tool.mjs | third_party/** | Append pending AI provenance ledger entries |
-| ai-provenance-agent-end.mjs | agent_end | Remind about unresolved provenance entries |
+| ai-provenance-post-tool.mjs | third_party/** | Append pending AI provenance ledger entries and passively steer completion |
+| ai-provenance-agent-end.mjs | agent_end | Verify provenance completion without sending follow-up turns |
 
 ## Fixtures
 
@@ -160,7 +160,7 @@ See [SCRIPT-TESTING.md](SCRIPT-TESTING.md) for detailed descriptions.
 | can-block-false-context.json | canBlock=false capability test |
 | prompt-submit-context.json | Prompt interception test |
 | third-party-edit-context.json | AI provenance post_tool_use test |
-| agent-end-context.json | AI provenance agent_end reminder test |
+| agent-end-context.json | AI provenance agent_end verifier test |
 
 ## Creating Triggers
 

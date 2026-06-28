@@ -1,7 +1,7 @@
 // AI provenance ledger trigger.
 // Records successful AI edits to third_party files as pending provenance entries.
 
-import { mkdirSync, readFileSync, writeFileSync, appendFileSync } from "node:fs";
+import { mkdirSync, readFileSync, appendFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { dirname, join, relative, resolve } from "node:path";
 
@@ -23,6 +23,17 @@ if (isError || !["edit", "write"].includes(action) || !normalizedFile.startsWith
 
 const ledgerPath = join(repoRoot, ".gitsense", "ai-provenance.jsonl");
 mkdirSync(dirname(ledgerPath), { recursive: true });
+
+const existingPending = readLedger(ledgerPath).find((ledgerEntry) =>
+  ledgerEntry.sessionId === (context.session?.id || "unknown") &&
+  ledgerEntry.file === normalizedFile &&
+  ledgerEntry.status !== "complete"
+);
+
+if (existingPending) {
+  console.log(JSON.stringify({ matched: true, block: false }));
+  process.exit(0);
+}
 
 let afterHash = "";
 try {
@@ -71,6 +82,23 @@ function normalizeRepoPath(file, cwd) {
   if (!file) return "";
   if (file.startsWith("/")) return relative(cwd, file).replaceAll("\\", "/");
   return file.replaceAll("\\", "/").replace(/^\.\//, "");
+}
+
+function readLedger(file) {
+  if (!existsSync(file)) return [];
+  return readFileSync(file, "utf8")
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .map(parseJsonLine)
+    .filter(Boolean);
+}
+
+function parseJsonLine(line) {
+  try {
+    return JSON.parse(line);
+  } catch {
+    return null;
+  }
 }
 
 function sha256(value) {

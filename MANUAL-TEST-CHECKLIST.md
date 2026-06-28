@@ -133,11 +133,14 @@ pi
 ### 11. AI Provenance (Third-Party Edits)
 **File:** `third_party/vendor-widget.js`
 **Action:** `edit`
-**Expected:** Notice about provenance entry
+**Expected:** Provenance entry is recorded; agent_end verifies without waking a follow-up turn
 
 - [ ] `edit third_party/vendor-widget.js`
 - [ ] Verify "AI provenance entry created" notice
-- [ ] Verify notice mentions updating `.gitsense/ai-provenance.jsonl`
+- [ ] Verify `.gitsense/ai-provenance.jsonl` gets a pending entry
+- [ ] If the agent completes the entry, verify an info notice says provenance is complete
+- [ ] If the entry remains pending, verify a warning says the next real turn will be guided to fix it
+- [ ] Verify no automatic follow-up turn is created
 
 ---
 
