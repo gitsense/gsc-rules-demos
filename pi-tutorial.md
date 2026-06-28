@@ -409,6 +409,122 @@ edit third_party/vendor-widget.js to add input validation to the normalizeVendor
 
 ---
 
+## Example 11: Mandatory Steering (Advanced)
+
+**What you'll learn:** How to use `steer` delivery mode to force the agent to respond immediately, creating mandatory obligations.
+
+**Rule ID:** `019f094d-9a10-7dfb-a76a-f11b9360a502` (you'll create this)
+**Rule type:** Executable trigger
+**Event:** `post_tool_use`
+**Delivery mode:** `steer` (forces agent to respond)
+
+### Create the rule
+
+```bash
+gsc rules new \
+  --event post_tool_use \
+  --action edit \
+  --glob "src/**/*.ts" \
+  --summary "TypeScript edit verification" \
+  --instruction "After editing TypeScript files, verify the changes compile successfully." \
+  --action edit
+```
+
+### Create the trigger
+
+Save as `.gitsense/rules/triggers/typescript-verify.mjs`:
+
+```javascript
+import { readFileSync } from 'node:fs';
+import { execSync } from 'node:child_process';
+
+const context = JSON.parse(readFileSync(0, 'utf8'));
+const toolResult = context.toolResult || {};
+const toolCall = context.toolCall || {};
+const action = toolCall.action || toolResult.action || '';
+const file = toolCall.file || toolResult.input?.path || '';
+
+// Only match TypeScript files
+if (!file.endsWith('.ts') && !file.endsWith('.tsx')) {
+  console.log(JSON.stringify({ matched: false, block: false }));
+  process.exit(0);
+}
+
+// Only match edit/write actions
+if (action !== 'edit' && action !== 'write') {
+  console.log(JSON.stringify({ matched: false, block: false }));
+  process.exit(0);
+}
+
+// Try to compile the file
+let compileResult = 'unknown';
+try {
+  execSync('npx tsc --noEmit --pretty', { timeout: 10000 });
+  compileResult = 'success';
+} catch (error) {
+  compileResult = 'failed';
+}
+
+if (compileResult === 'success') {
+  console.log(JSON.stringify({
+    matched: true,
+    block: false,
+    notice: 'TypeScript compilation passed for ' + file,
+    deliveryMode: 'steer'
+  }));
+} else {
+  console.log(JSON.stringify({
+    matched: true,
+    block: false,
+    notice: 'TypeScript compilation failed for ' + file + '. Please fix the errors before continuing.',
+    deliveryMode: 'steer'
+  }));
+}
+```
+
+### Update the rule to use the trigger
+
+```bash
+gsc rules update --id <rule-id> \
+  --trigger-runtime node \
+  --trigger-entry typescript-verify.mjs
+```
+
+### Test it
+
+**Prompt:**
+```
+edit src/example.ts to add a new function
+```
+
+**Expected behavior:**
+1. You type the prompt
+2. Pi processes it (LLM decides to call `edit` tool)
+3. **Edit completes**, then the trigger runs
+4. Trigger checks if TypeScript compiles
+5. If compilation fails, trigger sends `steer` message: "TypeScript compilation failed..."
+6. **Agent must respond** to the steer message (cannot ignore)
+7. Agent fixes the compilation errors
+
+### Why this is aggressive
+
+| Mode | Behavior | Agent Can Ignore? |
+|------|----------|-------------------|
+| `passiveSteer` | Queues guidance for next context | ✅ Yes |
+| `steer` | Forces agent to respond immediately | ❌ No |
+
+**Use cases for `steer`:**
+- Critical validation that must pass before continuing
+- Security checks that require immediate attention
+- Compliance requirements that cannot be skipped
+
+**Use cases for `passiveSteer`:**
+- Audit trails (like Example 10)
+- Advisory guidance
+- Background tasks
+
+---
+
 ## Creating Your Own Rules
 
 Now that you've seen how rules work, try creating your own!
