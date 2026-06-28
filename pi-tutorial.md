@@ -373,25 +373,7 @@ read src/errors/broken-trigger-target.txt
 
 ---
 
-## Example 10: canBlock=false (CLI Only)
-
-**What you'll learn:** Some lifecycle events don't support blocking - triggers can still run but can't stop the action.
-
-**Rule ID:** `019f0941-6b4c-7852-8a9e-6fbad87977dd`
-**Note:** Cannot test in Pi TUI (Pi sets canBlock=true for pre_tool_use)
-
-**Test via CLI:**
-```bash
-gsc rules execute \
-  --context .gitsense/rules/fixtures/can-block-false-context.json \
-  --rules <(gsc rules get --event post_tool_use --action edit --file src/capabilities/nonblocking-target.txt --format rules-json)
-```
-
-**Expected:** Trigger runs but block is converted to a notice because `canBlock: false`.
-
----
-
-## Example 11: AI Provenance Tracking
+## Example 10: AI Provenance Tracking
 
 **What you'll learn:** How to track AI-authored changes to third-party code for audit purposes.
 
@@ -411,7 +393,7 @@ gsc rules show 019f094d-8ec0 --format json
 
 **Prompt:**
 ```
-edit third_party/vendor-widget.js to fix a bug
+edit third_party/vendor-widget.js to add input validation to the normalizeVendorInput function
 ```
 
 **Expected behavior:**
