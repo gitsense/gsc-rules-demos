@@ -423,39 +423,44 @@ edit third_party/vendor-widget.js to add input validation to the normalizeVendor
 **Rule type:** Executable trigger
 **Event:** `post_tool_use`
 **Delivery mode:** `steer` (forces agent to respond)
+**Scope:** Personal (works across all your repositories)
 
 ### Quick Setup (Ask the Agent)
 
 The easiest way to set up this example is to ask the agent:
 
 ```
-Create a rule that verifies TypeScript compilation after editing .ts files. Use steer delivery mode so the agent must fix compilation errors before continuing.
+Create a personal rule that reminds me to run tests after editing test files. Use steer delivery mode so I don't forget.
 ```
 
 The agent will:
-1. Ask whether to save to repo or personal scope
-2. Create the rule with `gsc rules new --creator agent --target <scope>`
+1. Confirm this should be personal scope
+2. Create the rule with `gsc rules new --creator agent --target personal`
 3. Create the trigger file
-4. Update the rule to use the trigger
+4. Validate the trigger
+
+### Why Personal Scope?
+
+This rule is a **personal preference** - not everyone needs it, but it makes sense for developers who:
+- Want to run tests after editing test files
+- Prefer immediate feedback on test changes
+- Have a habit of forgetting to run tests before committing
+
+**Repo vs Personal:**
+- **Repo scope**: Project-specific conventions everyone should follow
+- **Personal scope**: Your individual workflow preferences
 
 ### Manual Setup (If Needed)
 
 <details>
 <summary>Click to expand manual setup steps</summary>
 
-#### 1. Choose scope
+#### 1. Create the trigger file
 
-Decide whether this rule should be:
-- **Repo scope** (`--target repo`): Shared with team, project-specific
-- **Personal scope** (`--target personal`): Your preference, works across repos
-
-#### 2. Create the trigger file
-
-Save as `.gitsense/rules/triggers/typescript-verify.mjs`:
+Save as `.gitsense/rules/triggers/remind-tests.mjs`:
 
 ```javascript
 import { readFileSync } from 'node:fs';
-import { execSync } from 'node:child_process';
 
 const context = JSON.parse(readFileSync(0, 'utf8'));
 const toolResult = context.toolResult || {};
@@ -463,8 +468,9 @@ const toolCall = context.toolCall || {};
 const action = toolCall.action || toolResult.action || '';
 const file = toolCall.file || toolResult.input?.path || '';
 
-// Only match TypeScript files
-if (!file.endsWith('.ts') && !file.endsWith('.tsx')) {
+// Only match test files
+const isTestFile = file.includes('.test.') || file.includes('.spec.') || file.includes('__tests__');
+if (!isTestFile) {
   console.log(JSON.stringify({ matched: false, block: false }));
   process.exit(0);
 }
@@ -475,70 +481,52 @@ if (action !== 'edit' && action !== 'write') {
   process.exit(0);
 }
 
-// Try to compile the file
-let compileResult = 'unknown';
-try {
-  execSync('npx tsc --noEmit --pretty', { timeout: 10000 });
-  compileResult = 'success';
-} catch (error) {
-  compileResult = 'failed';
-}
-
-if (compileResult === 'success') {
-  console.log(JSON.stringify({
-    matched: true,
-    block: false,
-    notice: 'TypeScript compilation passed for ' + file,
-    deliveryMode: 'steer'
-  }));
-} else {
-  console.log(JSON.stringify({
-    matched: true,
-    block: false,
-    notice: 'TypeScript compilation failed for ' + file + '. Please fix the errors before continuing.',
-    deliveryMode: 'steer'
-  }));
-}
+console.log(JSON.stringify({
+  matched: true,
+  block: false,
+  notice: 'You edited a test file. Consider running the tests to verify your changes.',
+  deliveryMode: 'steer'
+}));
 ```
 
-#### 3. Create the rule with trigger
+#### 2. Create the rule with trigger
 
 ```bash
 # Create rule JSON file
-cat > /tmp/typescript-verify-rule.json << 'EOF'
+cat > /tmp/remind-tests-rule.json << 'EOF'
 {
-  "summary": "TypeScript edit verification",
+  "summary": "Remind to run tests after editing test files",
   "event": "post_tool_use",
   "actions": ["edit"],
-  "glob_patterns": ["src/**/*.ts", "src/**/*.tsx"],
+  "glob_patterns": ["**/*.test.*", "**/*.spec.*", "**/__tests__/**"],
   "trigger": {
     "runtime": "node",
-    "entry": "typescript-verify.mjs"
+    "entry": "remind-tests.mjs"
   },
   "creatorChecklist": {
     "creator": "agent",
-    "intent": "Verify TypeScript compilation after editing .ts files",
-    "scope": "repo",
+    "intent": "Remind developer to run tests after editing test files",
+    "scope": "personal",
     "ruleKind": "executable",
     "topic": {
-      "slug": "typescript-safety",
+      "slug": "developer-workflow",
       "source": "existing",
       "verifiedFrom": "gsc topics list"
     },
     "matching": {
       "event": "post_tool_use",
       "actions": ["edit"],
-      "globs": ["src/**/*.ts", "src/**/*.tsx"]
+      "globs": ["**/*.test.*", "**/*.spec.*", "**/__tests__/**"]
     },
     "delivery": {
       "mode": "steer",
-      "blocks": true,
-      "messageShownToAgent": "TypeScript compilation failed. Please fix the errors before continuing."
+      "blocks": false,
+      "messageShownToAgent": "You edited a test file. Consider running the tests to verify your changes."
     },
-    "sideEffects": ["Runs local TypeScript compiler read-only"],
+    "sideEffects": ["None - just shows a notice"],
     "risk": {
-      "level": "high",
-      "reasons": ["Executable trigger", "Blocking steer delivery"]
+      "level": "low",
+      "reasons": ["Advisory notice only", "No blocking"]
     },
     "verification": {
       "lifecycleSupportVerifiedFrom": "gsc experts guide rules",
@@ -556,8 +544,8 @@ cat > /tmp/typescript-verify-rule.json << 'EOF'
 }
 EOF
 
-# Create the rule (replace --target with your choice)
-gsc rules trigger new --creator agent --target repo --from-file /tmp/typescript-verify-rule.json
+# Create the rule
+gsc rules trigger new --creator agent --target personal --from-file /tmp/remind-tests-rule.json
 ```
 
 </details>
@@ -566,17 +554,17 @@ gsc rules trigger new --creator agent --target repo --from-file /tmp/typescript-
 
 **Prompt:**
 ```
-edit src/example.ts to add a new function that returns a greeting message
+edit src/utils.test.ts to add a test for the new helper function
 ```
 
 **Expected behavior:**
 1. You type the prompt
 2. Pi processes it (LLM decides to call `edit` tool)
 3. **Edit completes**, then the trigger runs
-4. Trigger checks if TypeScript compiles
-5. If compilation fails, trigger sends `steer` message: "TypeScript compilation failed..."
-6. **Agent must respond** to the steer message (cannot ignore)
-7. Agent fixes the compilation errors before continuing
+4. Trigger detects you edited a test file
+5. Trigger sends `steer` message: "You edited a test file. Consider running the tests..."
+6. **Agent must acknowledge** the message (cannot ignore)
+7. Agent can then run the tests or explain why they don't need to
 
 ### Why This Is Aggressive
 
@@ -586,14 +574,24 @@ edit src/example.ts to add a new function that returns a greeting message
 | `steer` | Forces agent to respond immediately | ❌ No |
 
 **Use cases for `steer`:**
-- Critical validation that must pass before continuing
-- Security checks that require immediate attention
-- Compliance requirements that cannot be skipped
+- Reminders that you don't want to miss
+- Workflow habits you're trying to build
+- Checks that should happen every time
 
 **Use cases for `passiveSteer`:**
 - Audit trails (like Example 10)
 - Advisory guidance
 - Background tasks
+
+### Other Personal Rule Ideas
+
+Here are other personal rules that might make sense for different workflows:
+
+- **Late-night coding reminder**: "When editing files after 10pm, suggest taking a break"
+- **Commit message reminder**: "After editing more than 5 files, suggest writing a commit message"
+- **Import organizer**: "After editing TypeScript files, remind to organize imports"
+- **Documentation reminder**: "After editing API files, remind to update documentation"
+- **Backup reminder**: "Before editing configuration files, remind to create a backup"
 
 ---
 
