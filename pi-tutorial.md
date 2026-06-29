@@ -595,6 +595,188 @@ Here are other personal rules that might make sense for different workflows:
 
 ---
 
+## Example 12: Repo-Specific Rules (Advanced)
+
+**What you'll learn:** How to create repo-specific rules that enforce project conventions for your team.
+
+**Rule type:** Executable trigger
+**Event:** `pre_tool_use`
+**Delivery mode:** `steer` (blocks until approved)
+**Scope:** Repo (shared with team)
+
+### Quick Setup (Ask the Agent)
+
+The easiest way to set up this example is to ask the agent:
+
+```
+Create a repo rule that blocks edits to production config files without approval. Use steer delivery mode to enforce this.
+```
+
+The agent will:
+1. Confirm this should be repo scope
+2. Create the rule with `gsc rules new --creator agent --target repo`
+3. Create the trigger file
+4. Validate the trigger
+
+### Why Repo Scope?
+
+This rule is a **project convention** - everyone on the team should follow it:
+- Protects production configuration from accidental changes
+- Enforces approval workflow for critical files
+- Shared across all team members
+
+**Repo vs Personal:**
+- **Repo scope**: Project-specific conventions everyone should follow
+- **Personal scope**: Your individual workflow preferences
+
+### Manual Setup (If Needed)
+
+<details>
+<summary>Click to expand manual setup steps</summary>
+
+#### 1. Create the trigger file
+
+Save as `.gitsense/rules/triggers/require-approval.mjs`:
+
+```javascript
+import { readFileSync } from 'node:fs';
+
+const context = JSON.parse(readFileSync(0, 'utf8'));
+const toolCall = context.toolCall || {};
+const file = toolCall.file || '';
+const action = toolCall.action || toolCall.toolName || '';
+
+// Only match production config files
+const isProductionConfig = file.includes('config/production') || file.includes('.env.production');
+if (!isProductionConfig) {
+  console.log(JSON.stringify({ matched: false, block: false }));
+  process.exit(0);
+}
+
+// Only match edit/write actions
+if (action !== 'edit' && action !== 'write') {
+  console.log(JSON.stringify({ matched: false, block: false }));
+  process.exit(0);
+}
+
+// Check for approval (in a real scenario, this would check a ticket system)
+const hasApproval = process.env.PRODUCTION_APPROVAL === 'true';
+
+if (hasApproval) {
+  console.log(JSON.stringify({
+    matched: true,
+    block: false,
+    notice: 'Production config edit approved. Proceeding.',
+    deliveryMode: 'steer'
+  }));
+} else {
+  console.log(JSON.stringify({
+    matched: true,
+    block: true,
+    message: 'Production config changes require approval.\n\nTo approve:\n1. Create a change request ticket\n2. Get approval from your team lead\n3. Set PRODUCTION_APPROVAL=true in your environment\n\nThen retry the edit.',
+    deliveryMode: 'steer'
+  }));
+}
+```
+
+#### 2. Create the rule with trigger
+
+```bash
+# Create rule JSON file
+cat > /tmp/require-approval-rule.json << 'EOF'
+{
+  "summary": "Require approval for production config changes",
+  "event": "pre_tool_use",
+  "actions": ["edit", "write"],
+  "glob_patterns": ["config/production*", "*.env.production"],
+  "trigger": {
+    "runtime": "node",
+    "entry": "require-approval.mjs"
+  },
+  "creatorChecklist": {
+    "creator": "agent",
+    "intent": "Block production config changes without approval",
+    "scope": "repo",
+    "ruleKind": "executable",
+    "topic": {
+      "slug": "production-safety",
+      "source": "existing",
+      "verifiedFrom": "gsc topics list"
+    },
+    "matching": {
+      "event": "pre_tool_use",
+      "actions": ["edit", "write"],
+      "globs": ["config/production*", "*.env.production"]
+    },
+    "delivery": {
+      "mode": "steer",
+      "blocks": true,
+      "messageShownToAgent": "Production config changes require approval. Create a change request and get team lead approval."
+    },
+    "sideEffects": ["Checks PRODUCTION_APPROVAL environment variable"],
+    "risk": {
+      "level": "high",
+      "reasons": ["Blocks production config edits", "Requires approval workflow"]
+    },
+    "verification": {
+      "lifecycleSupportVerifiedFrom": "gsc experts guide rules",
+      "syntaxVerifiedFrom": "gsc rules trigger template",
+      "deliveryModeVerifiedFrom": "gsc experts guide rules",
+      "validationPlan": ["gsc rules trigger validate <created-rule-id>"]
+    },
+    "confirmation": {
+      "required": true,
+      "userConfirmed": true,
+      "confirmedText": "confirm"
+    },
+    "unresolved": []
+  }
+}
+EOF
+
+# Create the rule
+gsc rules trigger new --creator agent --target repo --from-file /tmp/require-approval-rule.json
+```
+
+</details>
+
+### Test It
+
+**Prompt:**
+```
+edit config/production.env to update the database connection string
+```
+
+**Expected behavior:**
+1. You type the prompt
+2. Pi processes it (LLM decides to call `edit` tool)
+3. **Block happens** when Pi tries to execute the edit
+4. Message: "Production config changes require approval..."
+5. **Agent cannot proceed** without approval
+6. User must set `PRODUCTION_APPROVAL=true` to continue
+
+### Comparison: Personal vs Repo Scope
+
+| Aspect | Example 11 (Personal) | Example 12 (Repo) |
+|--------|----------------------|-------------------|
+| **Scope** | `--target personal` | `--target repo` |
+| **Use case** | Individual workflow preference | Team convention |
+| **Shared with** | Only you | All team members |
+| **Example** | Test file reminder | Production config guard |
+| **Blocking** | Advisory (steer notice) | Blocking (steer block) |
+
+### Other Repo Rule Ideas
+
+Here are other repo-specific rules that make sense for teams:
+
+- **Deployment workflow guard**: "Block direct edits to .github/workflows/deploy.yml"
+- **Auto-generated file warning**: "Warn when editing auto-generated files"
+- **Security file protection**: "Block edits to security-sensitive files without review"
+- **API contract enforcement**: "Require API documentation updates when changing endpoints"
+- **Database migration guard**: "Require migration review for schema changes"
+
+---
+
 ## Creating Your Own Rules
 
 Now that you've seen how rules work, try creating your own!
