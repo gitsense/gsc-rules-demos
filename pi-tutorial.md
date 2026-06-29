@@ -433,27 +433,23 @@ Create a rule that verifies TypeScript compilation after editing .ts files. Use 
 ```
 
 The agent will:
-1. Create the rule with `gsc rules new`
-2. Create the trigger file
-3. Update the rule to use the trigger
+1. Ask whether to save to repo or personal scope
+2. Create the rule with `gsc rules new --creator agent --target <scope>`
+3. Create the trigger file
+4. Update the rule to use the trigger
 
 ### Manual Setup (If Needed)
 
 <details>
 <summary>Click to expand manual setup steps</summary>
 
-#### 1. Create the rule
+#### 1. Choose scope
 
-```bash
-gsc rules new \
-  --event post_tool_use \
-  --action edit \
-  --glob "src/**/*.ts" \
-  --summary "TypeScript edit verification" \
-  --instruction "After editing TypeScript files, verify the changes compile successfully."
-```
+Decide whether this rule should be:
+- **Repo scope** (`--target repo`): Shared with team, project-specific
+- **Personal scope** (`--target personal`): Your preference, works across repos
 
-#### 2. Create the trigger
+#### 2. Create the trigger file
 
 Save as `.gitsense/rules/triggers/typescript-verify.mjs`:
 
@@ -505,12 +501,63 @@ if (compileResult === 'success') {
 }
 ```
 
-#### 3. Update the rule to use the trigger
+#### 3. Create the rule with trigger
 
 ```bash
-gsc rules update --id <rule-id> \
-  --trigger-runtime node \
-  --trigger-entry typescript-verify.mjs
+# Create rule JSON file
+cat > /tmp/typescript-verify-rule.json << 'EOF'
+{
+  "summary": "TypeScript edit verification",
+  "event": "post_tool_use",
+  "actions": ["edit"],
+  "glob_patterns": ["src/**/*.ts", "src/**/*.tsx"],
+  "trigger": {
+    "runtime": "node",
+    "entry": "typescript-verify.mjs"
+  },
+  "creatorChecklist": {
+    "creator": "agent",
+    "intent": "Verify TypeScript compilation after editing .ts files",
+    "scope": "repo",
+    "ruleKind": "executable",
+    "topic": {
+      "slug": "typescript-safety",
+      "source": "existing",
+      "verifiedFrom": "gsc topics list"
+    },
+    "matching": {
+      "event": "post_tool_use",
+      "actions": ["edit"],
+      "globs": ["src/**/*.ts", "src/**/*.tsx"]
+    },
+    "delivery": {
+      "mode": "steer",
+      "blocks": true,
+      "messageShownToAgent": "TypeScript compilation failed. Please fix the errors before continuing."
+    },
+    "sideEffects": ["Runs local TypeScript compiler read-only"],
+    "risk": {
+      "level": "high",
+      "reasons": ["Executable trigger", "Blocking steer delivery"]
+    },
+    "verification": {
+      "lifecycleSupportVerifiedFrom": "gsc experts guide rules",
+      "syntaxVerifiedFrom": "gsc rules trigger template",
+      "deliveryModeVerifiedFrom": "gsc experts guide rules",
+      "validationPlan": ["gsc rules trigger validate <created-rule-id>"]
+    },
+    "confirmation": {
+      "required": true,
+      "userConfirmed": true,
+      "confirmedText": "confirm"
+    },
+    "unresolved": []
+  }
+}
+EOF
+
+# Create the rule (replace --target with your choice)
+gsc rules trigger new --creator agent --target repo --from-file /tmp/typescript-verify-rule.json
 ```
 
 </details>
