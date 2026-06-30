@@ -15,7 +15,7 @@
   "session": {
     "id": "test-session-deploy",
     "path": "/tmp/test-deploy.jsonl",
-    "cwd": "/Users/terrchen/gsc-trigger-test"
+    "cwd": "/Users/terrchen/gsc-rules-demos"
   },
   "conversation": {
     "leafId": "leaf-1",
@@ -31,7 +31,7 @@
       "id": "call-deploy-test",
       "toolName": "edit",
       "action": "edit",
-      "file": "/Users/terrchen/gsc-trigger-test/.github/workflows/deploy.yml",
+      "file": "/Users/terrchen/gsc-rules-demos/.github/workflows/deploy.yml",
       "command": null,
       "input": {
         "path": ".github/workflows/deploy.yml",
@@ -41,7 +41,7 @@
     }
   },
   "repo": {
-    "root": "/Users/terrchen/gsc-trigger-test",
+    "root": "/Users/terrchen/gsc-rules-demos",
     "normalizedFile": ".github/workflows/deploy.yml"
   },
   "rule": {

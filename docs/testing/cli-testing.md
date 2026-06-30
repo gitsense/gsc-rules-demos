@@ -1,30 +1,30 @@
-# SCRIPT-TESTING.md
+# CLI Testing
 
-CLI test scenarios for the `gsc rules` system. For TUI testing with Pi, see [TUI-TESTING.md](TUI-TESTING.md).
+CLI test scenarios for the `gsc rules` system. For agent TUI testing, see [agent-testing.md](agent-testing.md).
 
 ## Scenario Matrix
 
-| # | Scenario | Command/Prompt | Expected gsc Match | Expected Pi Behavior | Status | Notes |
+| # | Scenario | Command/Prompt | Expected gsc Match | Expected Agent Behavior | Status | Notes |
 |---|----------|----------------|-------------------|---------------------|--------|-------|
 | 1 | Declarative read block | `read data/accounting/q1.ledger` | Rule matches `data/accounting/**` | Block with instructions | ✅ Supported | Core case |
 | 2 | Executable edit/write block | `edit config/production.env` | Trigger matches `config/**` | Block with trigger message | ✅ Supported | Core case |
 | 3 | Notice-only (no block) | `edit src/generated/types.ts` | Trigger matches `src/**/generated/**` | Warning notice, no block | ✅ Supported | Core case |
 | 4 | Multi-rule match | `.github/workflows/deploy.yml` edit | Multiple rules match | Block with both reasons | ✅ Supported | Best matched-rule packet proof |
-| 5 | Prompt interception (exit) | Type `exit` | Trigger matches `^\s*exit\s*$` | Notice + input consumed | ⚠️ CLI first | Pi may not pass prompt text yet |
+| 5 | Prompt interception (exit) | Type `exit` | Trigger matches `^\s*exit\s*$` | Notice + input consumed | ⚠️ CLI first | Agent may not pass prompt text yet |
 | 6 | Parallel execution | `edit src/parallel/checkout.ts` | 3 triggers match | All 3 notices, ~1s | ✅ Supported | CLI timing proof preferred |
 | 7 | Priority ordering | `edit src/priority/overlap.ts` | Multiple rules, different priorities | Priority ordering respected | ✅ Supported | Verify in matchedRules output |
 | 8 | Frequency modes | `read src/frequency/repeated-read.txt` | Trigger with frequency=once | First read triggers, subsequent skip | ⚠️ CLI first | Old delivery tracker not active path |
 | 9 | Error handling | `read src/errors/broken-trigger-target.txt` | Error-throwing trigger | Fail-open, no block | ✅ Supported | Error logged |
-| 10 | canBlock=false | Direct fixture test | Trigger with canBlock=false | Block forced to notice | ❌ CLI only | Pi sets canBlock=true for pre_tool_use |
+| 10 | canBlock=false | Direct fixture test | Trigger with canBlock=false | Block forced to notice | ❌ CLI only | Some agents set canBlock=true for pre_tool_use |
 | 11 | AI provenance ledger | `edit third_party/vendor-widget.js` | post_tool_use trigger appends ledger entry; agent_end verifies completion | Warning notice plus passive next-turn guidance if pending | ⚠️ Review scenario | Demonstrates stateful triggers without follow-up loops |
 
 ## Status Legend
 
 | Status | Meaning |
 |--------|---------|
-| ✅ Supported | Works in both Pi and direct CLI |
-| ⚠️ CLI First | Test via `gsc rules execute`; Pi integration pending |
-| ❌ CLI Only | Direct execution only; Pi doesn't support this lifecycle/capability |
+| ✅ Supported | Works in both agent TUI and direct CLI |
+| ⚠️ CLI First | Test via `gsc rules execute`; agent integration pending |
+| ❌ CLI Only | Direct execution only; agent doesn't support this lifecycle/capability |
 
 ## Running Tests
 
@@ -102,9 +102,11 @@ gsc rules get --event pre_tool_use --action edit --file .github/workflows/deploy
 Type `exit` in Pi
 
 **Expected behavior:**
-- Shows notice: "Pi uses /quit to exit. Type /quit or press Ctrl+D."
+- Shows notice: "Uses /quit to exit. Type /quit or press Ctrl+D."
 - Input is consumed (not sent to LLM)
 - No chat completion runs
+
+**Note:** The exact command syntax varies by agent. See [../pi/input-command-mapping.md](../pi/input-command-mapping.md) for Pi-specific commands.
 
 **Direct CLI test:**
 ```bash
@@ -113,7 +115,9 @@ gsc rules execute \
   --rules <(gsc rules get --event user_prompt_submit --action prompt --format rules-json)
 ```
 
-**Limitation:** pi-brains may not pass prompt text to `gsc rules get --prompt` yet.
+**Limitation:** Agent integration may not pass prompt text to `gsc rules get --prompt` yet.
+
+---
 
 ### 6. Parallel Execution
 
@@ -198,7 +202,7 @@ gsc rules get --event pre_tool_use --action read --file src/errors/broken-trigge
 
 ### 10. canBlock=false
 
-**Direct CLI test only** (Pi sets canBlock=true for pre_tool_use)
+**Direct CLI test only** (most agents set canBlock=true for pre_tool_use)
 
 ```bash
 gsc rules execute \
@@ -294,7 +298,7 @@ console.log(JSON.stringify({
   "session": {
     "id": "test-session",
     "path": "/tmp/test.jsonl",
-    "cwd": "/Users/terrchen/gsc-trigger-test"
+    "cwd": "/Users/terrchen/gsc-rules-demos"
   },
   "conversation": {
     "leafId": "leaf-1",
@@ -311,7 +315,7 @@ console.log(JSON.stringify({
     }
   },
   "repo": {
-    "root": "/Users/terrchen/gsc-trigger-test",
+    "root": "/Users/terrchen/gsc-rules-demos",
     "normalizedFile": "relative/path"
   },
   "rule": {
@@ -334,11 +338,11 @@ console.log(JSON.stringify({
 3. Test trigger directly: `echo '{"payload":{}}' | node trigger.mjs`
 4. Check gsc rules get returns the rule
 
-### Pi not blocking
+### Agent not blocking
 
-1. Verify rules are enabled: `/brains rules on`
-2. Check debug mode: `/brains debug on`
-3. Verify gsc is available: `/brains`
+1. Verify rules are enabled in your agent (e.g., `/brains rules on` in Pi)
+2. Check debug mode is active
+3. Verify gsc is available to the agent
 4. Check trigger returns `{ block: true }`
 
 ### Parallel execution not working
@@ -350,7 +354,7 @@ console.log(JSON.stringify({
 
 ## References
 
-- [Parallel Execution](docs/parallel-execution.md)
-- [Input Command Mapping](docs/input-command-mapping.md)
-- [pi-brains Extension](~/pi-brains)
+- [Parallel Execution](parallel-execution.md)
+- [Pi Input Command Mapping](../pi/input-command-mapping.md)
+- [Pi Agent Documentation](../pi/tutorial.md)
 - [GitSense CLI](https://github.com/gitsense/gsc-cli)

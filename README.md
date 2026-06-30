@@ -1,237 +1,198 @@
-# gsc-trigger-test
+# GitSense Rules Demo
 
-A test repository for demonstrating and validating the `gsc rules` system.
+A demo repository showing how to use [GitSense rules](https://github.com/gitsense/gsc-cli) to guide and guard coding agent behavior.
 
-## Purpose
+## What You'll Learn
 
-This repository contains realistic test scenarios for the GitSense rules engine, including:
-
-- Declarative instruction rules
-- Executable trigger scripts
-- Parallel execution testing
-- Error handling and edge cases
-- Input command mapping
+- **Block risky operations** — Prevent agents from editing production configs without approval
+- **Inject context** — Provide format guidance when agents read specialized files
+- **Show warnings** — Alert agents when working with auto-generated code
+- **Intercept input** — Guide users toward correct agent commands
+- **Run triggers in parallel** — Execute multiple safety checks concurrently
 
 ## Quick Start
 
 ### Prerequisites
 
 - [GitSense CLI (gsc)](https://github.com/gitsense/gsc-cli) installed
-- [Pi coding agent](https://github.com/gitsense/pi) with pi-brains extension
+- A coding agent with GitSense integration (see [docs/pi/](docs/pi/) for Pi setup)
 
-### Setup
+### Try It
 
 ```bash
-# Clone the repository
-git clone <repo-url>
-cd gsc-trigger-test
+# Clone and enter the repo
+git clone https://github.com/gitsense/gsc-rules-demos.git
+cd gsc-rules-demos
 
-# Import rules (if using manifest)
+# Import the demo rules
 gsc manifest import .
 
-# Or create rules manually
-gsc rules new --event pre_tool_use --action read --glob "data/accounting/**" \
-  --summary "Accounting file guidance" \
-  --instruction "This is a pipe-delimited ledger. Use gsc query for metadata."
-```
+# See what rules exist
+gsc rules list
 
-### Testing
-
-There are two ways to test the rules:
-
-#### Script Testing (CLI)
-
-Use `gsc rules execute` to test trigger logic without Pi. This verifies rules match and triggers return correct responses.
-
-```bash
-# Test parallel execution timing
-./scripts/test-parallel-execute.sh
-
-# Test a specific rule
-gsc rules get --event pre_tool_use --action read --file data/accounting/q1.ledger
-
-# Test trigger execution
+# Test a rule — this will block with a message
 gsc rules execute \
   --context .gitsense/rules/fixtures/config-edit-context.json \
   --rules <(gsc rules get --event pre_tool_use --action edit --file config/production.env --format rules-json)
 ```
 
-See [SCRIPT-TESTING.md](SCRIPT-TESTING.md) for detailed CLI test scenarios.
+## Demo Rules
 
-#### TUI Testing (Pi)
+### 1. Config Guard (Block)
 
-Use Pi TUI to verify rules affect the actual agent behavior - blocking, notices, and UI rendering.
+Edits to `config/production.env` are blocked until you acknowledge the deployment approval process.
 
-```bash
-cd ~/gsc-trigger-test
-pi
+```
+$ edit config/production.env
+→ BLOCKED: CONFIG FILE GUARD — Changes to production config require deployment approval.
 ```
 
-See [TUI-TESTING.md](TUI-TESTING.md) for step-by-step TUI test prompts.
+### 2. Accounting Guidance (Block + Context)
 
-**Why both?**
-- Script tests verify trigger logic and timing
-- TUI tests verify the rules actually block/notify in the agent interface
+Reading `data/accounting/*.ledger` blocks with instructions about the pipe-delimited format.
+
+```
+$ read data/accounting/q1.ledger
+→ BLOCKED: These files use a pipe-delimited ledger format. Use `gsc query` for metadata.
+```
+
+### 3. Generated File Warning (Notice Only)
+
+Editing `src/generated/types.ts` shows a warning but allows the edit to proceed.
+
+```
+$ edit src/generated/types.ts
+→ WARNING: You are editing an auto-generated file. Consider editing the source schema instead.
+```
+
+### 4. Deployment Workflow Guard (Multi-Rule)
+
+Editing `.github/workflows/deploy.yml` triggers both a declarative rule and an executable trigger.
+
+```
+$ edit .github/workflows/deploy.yml
+→ BLOCKED: Deployment workflow changes require DevOps team review.
+→ BLOCKED: DEPLOYMENT WORKFLOW GUARD — Contact DevOps before modifying.
+```
+
+### 5. Parallel Execution
+
+Three triggers run concurrently when editing `src/parallel/checkout.ts`, completing in ~1s instead of ~3s.
+
+## Creating Your Own Rules
+
+### Declarative Rules (Instructions)
+
+Static instructions that agents should follow:
+
+```bash
+gsc rules new \
+  --glob "internal/cli/**" \
+  --action edit \
+  --summary "CLI file conventions" \
+  --instruction "Do not run gofmt -w" \
+  --instruction "Bump the Version field"
+```
+
+### Executable Triggers (Dynamic)
+
+Scripts that evaluate context and decide whether to block:
+
+```bash
+# Create a trigger file
+cat > .gitsense/rules/triggers/my-guard.mjs << 'EOF'
+import { readFileSync } from 'node:fs';
+const ctx = JSON.parse(readFileSync(0, 'utf8'));
+const file = ctx.repo?.normalizedFile || '';
+
+if (file.startsWith('config/')) {
+  console.log(JSON.stringify({
+    matched: true,
+    block: true,
+    message: "Config changes require approval."
+  }));
+} else {
+  console.log(JSON.stringify({ matched: false, block: false }));
+}
+EOF
+
+# Register the trigger
+gsc rules trigger new \
+  --title "Config guard" \
+  --runtime node \
+  --entry my-guard.mjs \
+  --glob "config/**" \
+  --action edit \
+  --frequency always
+```
+
+### Trigger Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `matched` | boolean | Does this rule apply? |
+| `block` | boolean | Stop the action? |
+| `message` | string | Reason shown when blocking |
+| `notice` | string | Warning shown without blocking |
 
 ## Repository Structure
 
 ```
-gsc-trigger-test/
+gsc-rules-demos/
+├── config/                  # Protected config files
+│   └── production.env
 ├── data/
-│   └── accounting/          # Accounting ledger files (pipe-delimited)
-├── config/
-│   └── production.env       # Production environment config
+│   └── accounting/          # Pipe-delimited ledger files
 ├── src/
-│   ├── generated/           # Auto-generated files
+│   ├── generated/           # Auto-generated code (warning only)
 │   ├── parallel/            # Parallel execution test files
 │   ├── priority/            # Priority ordering test files
 │   ├── frequency/           # Frequency mode test files
-│   ├── errors/              # Error handling test files
-│   └── capabilities/        # Capability test files
-├── .github/workflows/       # Deployment workflows
+│   └── errors/              # Error handling test files
+├── third_party/             # External code (AI provenance tracking)
 ├── .gitsense/
 │   ├── rules/
+│   │   ├── records.jsonl    # Rule definitions
 │   │   ├── triggers/        # Executable trigger scripts
-│   │   └── fixtures/        # Test fixtures for direct execution
-│   └── experts-context.md   # Agent context
-├── scripts/
-│   └── test-parallel-execute.sh  # Parallel execution test script
-├── docs/
-│   ├── parallel-execution.md     # Parallel execution documentation
-│   └── input-command-mapping.md  # Input command mapping guide
-├── SCRIPT-TESTING.md        # CLI test scenarios and procedures
-└── README.md                # This file
+│   │   └── fixtures/        # Test contexts for CLI testing
+│   └── topics/              # Topic definitions
+└── docs/
+    ├── testing/             # Test documentation
+    │   ├── cli-testing.md
+    │   ├── agent-testing.md
+    │   └── parallel-execution.md
+    └── pi/                  # Pi-specific documentation
+        ├── tutorial.md
+        └── input-command-mapping.md
 ```
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [docs/testing/cli-testing.md](docs/testing/cli-testing.md) | CLI test scenarios and procedures |
+| [docs/testing/agent-testing.md](docs/testing/agent-testing.md) | Agent TUI test checklist |
+| [docs/testing/parallel-execution.md](docs/testing/parallel-execution.md) | How parallel trigger execution works |
+| [docs/pi/tutorial.md](docs/pi/tutorial.md) | Step-by-step Pi tutorial |
+| [docs/pi/input-command-mapping.md](docs/pi/input-command-mapping.md) | Pi-specific command interception |
 
 ## Test Scenarios
 
 | # | Scenario | Status |
 |---|----------|--------|
-| 1 | Declarative read block | ✅ Supported |
-| 2 | Executable edit/write block | ✅ Supported |
-| 3 | Notice-only (no block) | ✅ Supported |
-| 4 | Multi-rule match | ✅ Supported |
-| 5 | Prompt interception (exit) | ⚠️ CLI first |
-| 6 | Parallel execution | ✅ Supported |
-| 7 | Priority ordering | ✅ Supported |
+| 1 | Declarative read block | ✅ |
+| 2 | Executable edit/write block | ✅ |
+| 3 | Notice-only (no block) | ✅ |
+| 4 | Multi-rule match | ✅ |
+| 5 | Prompt interception | ⚠️ CLI first |
+| 6 | Parallel execution | ✅ |
+| 7 | Priority ordering | ✅ |
 | 8 | Frequency modes | ⚠️ CLI first |
-| 9 | Error handling | ✅ Supported |
+| 9 | Error handling (fail-open) | ✅ |
 | 10 | canBlock=false | ❌ CLI only |
-| 11 | AI provenance ledger for third-party edits | ⚠️ Review scenario |
+| 11 | AI provenance tracking | ⚠️ Review |
 
-See [SCRIPT-TESTING.md](SCRIPT-TESTING.md) for detailed descriptions.
-
-## Documentation
-
-- [SCRIPT-TESTING.md](SCRIPT-TESTING.md) - CLI test scenarios and procedures
-- [docs/parallel-execution.md](docs/parallel-execution.md) - Parallel execution guide
-- [docs/input-command-mapping.md](docs/input-command-mapping.md) - Input command mapping guide
-
-## Triggers
-
-### Core Triggers
-
-| Trigger | File | Purpose |
-|---------|------|---------|
-| deploy-guard.mjs | .github/workflows/deploy.yml, config/** | Deployment workflow and config protection |
-| generated-notice.mjs | src/generated/**, src/capabilities/** | Auto-generated file warnings |
-| exit-alias-notice.mjs | user input "exit" | Exit command guidance |
-
-### Test Triggers
-
-| Trigger | File | Purpose |
-|---------|------|---------|
-| accounting-check.mjs | data/accounting/** | Accounting file guidance (available but not wired to rule) |
-| parallel-slow-a.mjs | src/parallel/** | Parallel execution test (1000ms) |
-| parallel-slow-b.mjs | src/parallel/** | Parallel execution test (1000ms) |
-| parallel-slow-c.mjs | src/parallel/** | Parallel execution test (1000ms) |
-| frequency-test.mjs | src/frequency/** | Frequency mode test |
-| throws-error.mjs | src/errors/** | Error handling test |
-| invalid-json.mjs | src/errors/** | Invalid JSON handling test |
-| timeout.mjs | src/errors/** | Timeout handling test |
-| ai-provenance-post-tool.mjs | third_party/** | Append pending AI provenance ledger entries and passively steer completion |
-| ai-provenance-agent-end.mjs | agent_end | Verify provenance completion without sending follow-up turns |
-
-## Fixtures
-
-| Fixture | Purpose |
-|---------|---------|
-| parallel-edit-context.json | Parallel execution CLI test |
-| can-block-false-context.json | canBlock=false capability test |
-| prompt-submit-context.json | Prompt interception test |
-| third-party-edit-context.json | AI provenance post_tool_use test |
-| agent-end-context.json | AI provenance agent_end verifier test |
-
-## Creating Triggers
-
-### Context Structure
-
-**Important:** `gsc rules execute` transforms the context before passing it to triggers. The `toolCall` and `toolResult` fields are at the **top level**, not inside `payload`.
-
-**What you provide (V1ExecutionContext):**
-```json
-{
-  "payload": {
-    "toolCall": { "file": "/path/to/file", "action": "edit" }
-  }
-}
-```
-
-**What the trigger receives (V1TriggerContext):**
-```json
-{
-  "toolCall": { "file": "/path/to/file", "action": "edit" },
-  "payload": { "prompt": { ... }, "toolResult": { ... } }
-}
-```
-
-### Trigger Template
-
-Use this pattern for compatibility with both `gsc rules execute` and direct testing:
-
-```javascript
-import { readFileSync } from 'node:fs';
-const context = JSON.parse(readFileSync(0, 'utf8'));
-
-// toolCall is at top level in gsc, but may be in payload for direct testing
-const toolCall = context.toolCall || context.payload?.toolCall || {};
-const toolResult = context.toolResult || context.payload?.toolResult || {};
-const file = toolCall.file || toolResult.input?.path || '';
-const action = toolCall.action || toolCall.toolName || '';
-
-// Match logic
-if (!file.includes('your-pattern')) {
-  console.log(JSON.stringify({ matched: false, block: false }));
-  process.exit(0);
-}
-
-// Response
-console.log(JSON.stringify({
-  matched: true,
-  block: true,  // or false for notice-only
-  message: "Your message here"  // or notice for notice-only
-}));
-```
-
-### Response Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `matched` | boolean | Whether the trigger matched the context |
-| `block` | boolean | Whether to block the action (forced to false when `canBlock=false`) |
-| `message` | string | Message shown when blocking |
-| `notice` | string | Notice shown without blocking |
-| `deliveryMode` | string | `"steer"`, `"followUp"`, or `"passiveSteer"` |
-
-## Contributing
-
-To add a new test scenario:
-
-1. Create the target file
-2. Create a trigger script in `.gitsense/rules/triggers/`
-3. Create a fixture if needed for direct CLI testing
-4. Add the scenario to [SCRIPT-TESTING.md](SCRIPT-TESTING.md)
-5. Update this README if needed
+See [docs/testing/cli-testing.md](docs/testing/cli-testing.md) for details.
 
 ## License
 

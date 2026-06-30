@@ -84,10 +84,10 @@ Time: ~1 second
 5. Results are collected and merged
 6. Final result includes all trigger results
 
-## Pi Integration
+## Agent Integration
 
-When using pi-brains with live Pi:
-- pi-brains calls `gsc rules execute` without `-j`, so it uses the default (8)
+When using a coding agent with GitSense integration:
+- The agent extension calls `gsc rules execute` without `-j`, so it uses the default (8)
 - Multiple triggers for the same file run concurrently
 - No configuration needed
 

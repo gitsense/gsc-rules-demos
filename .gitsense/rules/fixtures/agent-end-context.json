@@ -15,7 +15,7 @@
   "session": {
     "id": "test-session-provenance",
     "path": "/tmp/test-provenance.jsonl",
-    "cwd": "/Users/terrchen/gsc-trigger-test"
+    "cwd": "/Users/terrchen/gsc-rules-demos"
   },
   "conversation": {
     "leafId": "leaf-provenance-2",
@@ -34,7 +34,7 @@
     }
   },
   "repo": {
-    "root": "/Users/terrchen/gsc-trigger-test",
+    "root": "/Users/terrchen/gsc-rules-demos",
     "normalizedFile": null
   },
   "rule": {

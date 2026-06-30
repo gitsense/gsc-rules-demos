@@ -15,7 +15,7 @@
   "session": {
     "id": "test-session-nonblocking",
     "path": "/tmp/test-nonblocking.jsonl",
-    "cwd": "/Users/terrchen/gsc-trigger-test"
+    "cwd": "/Users/terrchen/gsc-rules-demos"
   },
   "conversation": {
     "leafId": "leaf-1",

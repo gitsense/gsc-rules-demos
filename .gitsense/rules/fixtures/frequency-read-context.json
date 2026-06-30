@@ -15,7 +15,7 @@
   "session": {
     "id": "test-session-frequency",
     "path": "/tmp/test-frequency.jsonl",
-    "cwd": "/Users/terrchen/gsc-trigger-test"
+    "cwd": "/Users/terrchen/gsc-rules-demos"
   },
   "conversation": {
     "leafId": "leaf-1",
@@ -31,7 +31,7 @@
       "id": "call-frequency-test",
       "toolName": "read",
       "action": "read",
-      "file": "/Users/terrchen/gsc-trigger-test/src/frequency/repeated-read.txt",
+      "file": "/Users/terrchen/gsc-rules-demos/src/frequency/repeated-read.txt",
       "command": null,
       "input": {
         "path": "src/frequency/repeated-read.txt"
@@ -39,7 +39,7 @@
     }
   },
   "repo": {
-    "root": "/Users/terrchen/gsc-trigger-test",
+    "root": "/Users/terrchen/gsc-rules-demos",
     "normalizedFile": "src/frequency/repeated-read.txt"
   },
   "rule": {

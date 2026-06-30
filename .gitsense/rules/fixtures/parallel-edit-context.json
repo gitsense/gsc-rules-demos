@@ -15,7 +15,7 @@
   "session": {
     "id": "test-session-parallel",
     "path": "/tmp/test-parallel.jsonl",
-    "cwd": "/Users/terrchen/gsc-trigger-test"
+    "cwd": "/Users/terrchen/gsc-rules-demos"
   },
   "conversation": {
     "leafId": "leaf-1",
@@ -31,7 +31,7 @@
       "id": "call-parallel-test",
       "toolName": "edit",
       "action": "edit",
-      "file": "/Users/terrchen/gsc-trigger-test/src/parallel/checkout.ts",
+      "file": "/Users/terrchen/gsc-rules-demos/src/parallel/checkout.ts",
       "command": null,
       "input": {
         "path": "src/parallel/checkout.ts",
@@ -41,7 +41,7 @@
     }
   },
   "repo": {
-    "root": "/Users/terrchen/gsc-trigger-test",
+    "root": "/Users/terrchen/gsc-rules-demos",
     "normalizedFile": "src/parallel/checkout.ts"
   },
   "rule": {

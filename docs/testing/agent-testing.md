@@ -1,16 +1,13 @@
 # Manual Test Checklist
 
-Use this checklist when testing rules in Pi TUI.
+Use this checklist when testing rules in your coding agent's TUI.
 
 ## Setup
 
-```bash
-cd ~/gsc-trigger-test
-pi
-/brains debug on  # Optional - enables file-based debug logging
-```
+1. Open your coding agent in the repository directory
+2. Enable debug logging if supported (e.g., `/brains debug on` in Pi)
 
-**Note:** Rules are enabled by default. No need to run `/brains rules on`.
+**Note:** Rules are enabled by default when a GitSense agent integration is active.
 
 ---
 
@@ -70,9 +67,11 @@ pi
 **Expected:** Notice + input consumed
 
 - [ ] Type `exit`
-- [ ] Verify "Pi uses /quit to exit" notice appears
+- [ ] Verify agent-specific guidance notice appears (e.g., "Pi uses /quit to exit" in Pi)
 - [ ] Verify no LLM response is generated
 - [ ] Verify input is not in conversation history
+
+**Note:** The exact notice text varies by agent. See [../pi/input-command-mapping.md](../pi/input-command-mapping.md) for Pi-specific commands.
 
 ---
 
@@ -125,7 +124,7 @@ pi
 ---
 
 ### 10. canBlock=false
-**Note:** Cannot test in Pi TUI (Pi sets canBlock=true for pre_tool_use)
+**Note:** Cannot test in agent TUI (most agents set canBlock=true for pre_tool_use)
 **Test via CLI:** `gsc rules execute --context .gitsense/rules/fixtures/can-block-false-context.json`
 
 ---
@@ -166,4 +165,4 @@ gsc rules list
 
 - Debug mode writes to file, use `tail -f` to monitor
 - Some scenarios may only work via CLI (`gsc rules execute`)
-- Prompt interception requires pi-brains to pass prompt text to gsc
+- Prompt interception requires agent integration to pass prompt text to gsc

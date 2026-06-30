@@ -15,7 +15,7 @@
   "session": {
     "id": "test-session-generated",
     "path": "/tmp/test-generated.jsonl",
-    "cwd": "/Users/terrchen/gsc-trigger-test"
+    "cwd": "/Users/terrchen/gsc-rules-demos"
   },
   "conversation": {
     "leafId": "leaf-1",
@@ -31,7 +31,7 @@
       "id": "call-generated-test",
       "toolName": "edit",
       "action": "edit",
-      "file": "/Users/terrchen/gsc-trigger-test/src/generated/types.ts",
+      "file": "/Users/terrchen/gsc-rules-demos/src/generated/types.ts",
       "command": null,
       "input": {
         "path": "src/generated/types.ts",
@@ -41,7 +41,7 @@
     }
   },
   "repo": {
-    "root": "/Users/terrchen/gsc-trigger-test",
+    "root": "/Users/terrchen/gsc-rules-demos",
     "normalizedFile": "src/generated/types.ts"
   },
   "rule": {

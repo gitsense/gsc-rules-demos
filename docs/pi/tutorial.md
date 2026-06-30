@@ -5,7 +5,7 @@ Step-by-step guide for understanding and using GitSense rules in Pi.
 ## Setup
 
 ```bash
-cd ~/gsc-trigger-test
+cd ~/gsc-rules-demos
 pi
 ```
 
