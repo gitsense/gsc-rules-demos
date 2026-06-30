@@ -224,4 +224,4 @@ See [docs/testing/cli-testing.md](docs/testing/cli-testing.md) for details.
 
 ## License
 
-MIT
+Apache 2.0
