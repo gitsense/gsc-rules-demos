@@ -1,16 +1,40 @@
-# GitSense Rules Demo
+# gsc-rules-demos
 
-A demo repository showing how to use [GitSense rules](https://github.com/gitsense/gsc-cli) to guide and guard coding agent behavior.
+A demo repo for trying GitSense rules, notes, lessons, and triggers with coding agents.
+
+## Start Here With Pi
+
+```bash
+git clone https://github.com/gitsense/gsc-rules-demos.git
+cd gsc-rules-demos
+pi install npm:@gitsense/pi-brains
+pi
+```
+
+If this is your first time using `pi-brains`, run:
+
+```text
+/brains
+```
+
+Then ask Pi:
+
+```text
+Show me what rules, notes, lessons, and triggers are available in this repo.
+```
+
+The repo ships with rules, notes, lessons, and triggers so you can see how an agent can pick up behavior and project knowledge from the workspace.
 
 ## What You'll Learn
 
 - **Block risky operations** — Prevent agents from editing production configs without approval
+- **Use notes on demand** — Teach agents how to interpret files with project-specific context
 - **Inject context** — Provide format guidance when agents read specialized files
 - **Show warnings** — Alert agents when working with auto-generated code
 - **Intercept input** — Guide users toward correct agent commands
 - **Run triggers in parallel** — Execute multiple safety checks concurrently
 
-## Quick Start
+## CLI Quick Start
 
 ### Prerequisites
 
@@ -47,13 +71,13 @@ $ edit config/production.env
 → BLOCKED: CONFIG FILE GUARD — Changes to production config require deployment approval.
 ```
 
-### 2. Accounting Guidance (Block + Context)
+### 2. Accounting Guidance (Rule + Note)
 
-Reading `data/accounting/*.ledger` blocks with instructions about the pipe-delimited format.
+Reading `data/accounting/*.ledger` triggers a rule that tells the agent to review accounting notes before interpreting the file.
 
 ```
 $ read data/accounting/q1.ledger
-→ BLOCKED: These files use a pipe-delimited ledger format. Use `gsc query` for metadata.
+→ BLOCKED: Review the accounting note to learn how to read this ledger.
 ```
 
 ### 3. Generated File Warning (Notice Only)

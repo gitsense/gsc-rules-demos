@@ -16,11 +16,11 @@ Use this checklist when testing rules in your coding agent's TUI.
 ### 1. Declarative Read Block
 **File:** `data/accounting/q1.ledger`
 **Action:** `read`
-**Expected:** Block with instructions about pipe-delimited format
+**Expected:** Block with instructions to review accounting notes
 
 - [ ] `read data/accounting/q1.ledger`
 - [ ] Verify block message appears
-- [ ] Verify instructions mention `gsc query --file ... --topic accounting`
+- [ ] Verify instructions mention accounting notes for this file or topic
 - [ ] Retry read after instructions delivered
 - [ ] Second read should succeed
 

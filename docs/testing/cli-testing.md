@@ -36,8 +36,8 @@ read data/accounting/q1.ledger
 ```
 
 **Expected behavior:**
-- First read: Blocks with instructions about pipe-delimited format
-- Instructions include: `gsc query --file data/accounting/q1.ledger --topic accounting`
+- First read: Blocks with instructions to review accounting notes
+- Instructions mention accounting notes for this file or topic
 - Subsequent reads: May skip if delivery tracking is active
 
 **Verify:**
