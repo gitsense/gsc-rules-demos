@@ -1,5 +1,9 @@
 # gsc-rules-demos
 
+<p align="center">
+  <img src="assets/gsc-rules-demos.png" width="600" alt="gsc-rules-demos" />
+</p>
+
 A demo repo for trying GitSense rules, notes, lessons, and triggers with coding agents.
 
 ## Start Here With Pi
