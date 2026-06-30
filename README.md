@@ -4,30 +4,31 @@
   <img src="assets/gsc-rules-demos.png" width="600" alt="gsc-rules-demos" />
 </p>
 
-A demo repo for trying GitSense rules, notes, lessons, and triggers with coding agents.
+A hands-on demo repo for experiencing GitSense rules with a coding agent. Try it out and see how agents can be warned, guided, and blocked — just by asking.
 
-## Start Here With Pi
+## Quick Start
+
+Clone the repo and start your agent:
 
 ```bash
 git clone https://github.com/gitsense/gsc-rules-demos.git
 cd gsc-rules-demos
+```
+
+### Pi
+
+```bash
 pi install npm:@gitsense/pi-brains
 pi
 ```
 
-If this is your first time using `pi-brains`, run:
+Once Pi starts, initialize the brains:
 
-```text
+```
 /brains
 ```
 
-Then ask Pi:
-
-```text
-Show me what rules, notes, lessons, and triggers are available in this repo.
-```
-
-The repo ships with rules, notes, lessons, and triggers so you can see how an agent can pick up behavior and project knowledge from the workspace.
+This teaches the agent how to use `gsc` commands. Rules are enabled by default.
 
 ## What You'll Learn
 
@@ -38,189 +39,105 @@ The repo ships with rules, notes, lessons, and triggers so you can see how an ag
 - **Intercept input** — Guide users toward correct agent commands
 - **Run triggers in parallel** — Execute multiple safety checks concurrently
 
-## CLI Quick Start
+## See it in Action
 
-### Prerequisites
+Once your agent is running, try these prompts and see what happens.
 
-- [GitSense CLI (gsc)](https://github.com/gitsense/gsc-cli) installed
-- A coding agent with GitSense integration (see [docs/pi/](docs/pi/) for Pi setup)
+### 1. Intercept a Command
 
-### Try It
-
-```bash
-# Clone and enter the repo
-git clone https://github.com/gitsense/gsc-rules-demos.git
-cd gsc-rules-demos
-
-# Import the demo rules
-gsc manifest import .
-
-# See what rules exist
-gsc rules list
-
-# Test a rule — this will block with a message
-gsc rules execute \
-  --context .gitsense/rules/fixtures/config-edit-context.json \
-  --rules <(gsc rules get --event pre_tool_use --action edit --file config/production.env --format rules-json)
-```
-
-## Demo Rules
-
-### 1. Config Guard (Block)
-
-Edits to `config/production.env` are blocked until you acknowledge the deployment approval process.
+**Try this:**
 
 ```
-$ edit config/production.env
-→ BLOCKED: CONFIG FILE GUARD — Changes to production config require deployment approval.
+exit
 ```
 
-### 2. Accounting Guidance (Rule + Note)
+**What happens:** The agent intercepts your input before it reaches the AI. You'll see a warning that `exit` isn't a valid command, and guidance to use `/quit` instead. No AI response is generated — the rule steps in first.
 
-Reading `data/accounting/*.ledger` triggers a rule that tells the agent to review accounting notes before interpreting the file.
+---
 
-```
-$ read data/accounting/q1.ledger
-→ BLOCKED: Review the accounting note to learn how to read this ledger.
-```
+### 2. Read a Ledger File
 
-### 3. Generated File Warning (Notice Only)
-
-Editing `src/generated/types.ts` shows a warning but allows the edit to proceed.
+**Try this:**
 
 ```
-$ edit src/generated/types.ts
-→ WARNING: You are editing an auto-generated file. Consider editing the source schema instead.
+read data/accounting/q1.ledger
 ```
 
-### 4. Deployment Workflow Guard (Multi-Rule)
+**What happens:** The agent blocks the read and tells you to review accounting notes first. These notes explain the ledger format and business context. Try the same prompt again — the second read succeeds because the instructions were already delivered.
 
-Editing `.github/workflows/deploy.yml` triggers both a declarative rule and an executable trigger.
+---
+
+### 3. Edit an Auto-Generated File
+
+**Try this:**
 
 ```
-$ edit .github/workflows/deploy.yml
-→ BLOCKED: Deployment workflow changes require DevOps team review.
-→ BLOCKED: DEPLOYMENT WORKFLOW GUARD — Contact DevOps before modifying.
+edit src/generated/types.ts to add a nickname field
 ```
 
-### 5. Parallel Execution
+**What happens:** The agent warns you that this is an auto-generated file and suggests editing the source schema instead. The edit proceeds — it's a warning, not a block.
 
-Three triggers run concurrently when editing `src/parallel/checkout.ts`, completing in ~1s instead of ~3s.
+---
+
+### 4. Edit a Production Config
+
+**Try this:**
+
+```
+edit config/production.env to change APP_PORT to 9090
+```
+
+**What happens:** The agent blocks the edit with a message: "Production configuration changes require deployment approval." You'll need to set `AI_CONFIG_EDIT_APPROVED=true` in your environment to proceed.
+
+---
+
+### 5. Edit a Deployment Workflow
+
+**Try this:**
+
+```
+edit .github/workflows/deploy.yml to add a logging step
+```
+
+**What happens:** Multiple rules fire at once. You'll see both a declarative instruction ("Deployment workflow changes require DevOps team review") and an executable trigger ("DEPLOYMENT WORKFLOW GUARD"). The edit is blocked until both are addressed.
+
+---
+
+### 6. Parallel Safety Checks
+
+**Try this:**
+
+```
+edit src/parallel/checkout.ts to add a discount field
+```
+
+**What happens:** Three triggers run concurrently and complete in ~1.5 seconds (the longest trigger) instead of ~3 seconds (if they ran sequentially). You'll see notices from each one.
+
+---
+
+### 7. Edit Third-Party Code
+
+**Try this:**
+
+```
+edit third_party/vendor-widget.js to add input validation
+```
+
+**What happens:** The edit completes, then a provenance entry is created tracking that an AI made changes to third-party code. Useful for audit trails.
 
 ## Creating Your Own Rules
 
-### Declarative Rules (Instructions)
-
-Static instructions that agents should follow:
-
-```bash
-gsc rules new \
-  --glob "internal/cli/**" \
-  --action edit \
-  --summary "CLI file conventions" \
-  --instruction "Do not run gofmt -w" \
-  --instruction "Bump the Version field"
-```
-
-### Executable Triggers (Dynamic)
-
-Scripts that evaluate context and decide whether to block:
-
-```bash
-# Create a trigger file
-cat > .gitsense/rules/triggers/my-guard.mjs << 'EOF'
-import { readFileSync } from 'node:fs';
-const ctx = JSON.parse(readFileSync(0, 'utf8'));
-const file = ctx.repo?.normalizedFile || '';
-
-if (file.startsWith('config/')) {
-  console.log(JSON.stringify({
-    matched: true,
-    block: true,
-    message: "Config changes require approval."
-  }));
-} else {
-  console.log(JSON.stringify({ matched: false, block: false }));
-}
-EOF
-
-# Register the trigger
-gsc rules trigger new \
-  --title "Config guard" \
-  --runtime node \
-  --entry my-guard.mjs \
-  --glob "config/**" \
-  --action edit \
-  --frequency always
-```
-
-### Trigger Response Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `matched` | boolean | Does this rule apply? |
-| `block` | boolean | Stop the action? |
-| `message` | string | Reason shown when blocking |
-| `notice` | string | Warning shown without blocking |
-
-## Repository Structure
+The easiest way to create rules is to ask the agent:
 
 ```
-gsc-rules-demos/
-├── config/                  # Protected config files
-│   └── production.env
-├── data/
-│   └── accounting/          # Pipe-delimited ledger files
-├── src/
-│   ├── generated/           # Auto-generated code (warning only)
-│   ├── parallel/            # Parallel execution test files
-│   ├── priority/            # Priority ordering test files
-│   ├── frequency/           # Frequency mode test files
-│   └── errors/              # Error handling test files
-├── third_party/             # External code (AI provenance tracking)
-├── .gitsense/
-│   ├── rules/
-│   │   ├── records.jsonl    # Rule definitions
-│   │   ├── triggers/        # Executable trigger scripts
-│   │   └── fixtures/        # Test contexts for CLI testing
-│   └── topics/              # Topic definitions
-└── docs/
-    ├── testing/             # Test documentation
-    │   ├── cli-testing.md
-    │   ├── agent-testing.md
-    │   └── parallel-execution.md
-    └── pi/                  # Pi-specific documentation
-        ├── tutorial.md
-        └── input-command-mapping.md
+add a rule that warns when editing test files in src/
 ```
 
-## Documentation
+```
+create a rule that blocks edits to package.json unless TEST_MODE is set
+```
 
-| Document | Description |
-|----------|-------------|
-| [docs/testing/cli-testing.md](docs/testing/cli-testing.md) | CLI test scenarios and procedures |
-| [docs/testing/agent-testing.md](docs/testing/agent-testing.md) | Agent TUI test checklist |
-| [docs/testing/parallel-execution.md](docs/testing/parallel-execution.md) | How parallel trigger execution works |
-| [docs/pi/tutorial.md](docs/pi/tutorial.md) | Step-by-step Pi tutorial |
-| [docs/pi/input-command-mapping.md](docs/pi/input-command-mapping.md) | Pi-specific command interception |
-
-## Test Scenarios
-
-| # | Scenario | Status |
-|---|----------|--------|
-| 1 | Declarative read block | ✅ |
-| 2 | Executable edit/write block | ✅ |
-| 3 | Notice-only (no block) | ✅ |
-| 4 | Multi-rule match | ✅ |
-| 5 | Prompt interception | ⚠️ CLI first |
-| 6 | Parallel execution | ✅ |
-| 7 | Priority ordering | ✅ |
-| 8 | Frequency modes | ⚠️ CLI first |
-| 9 | Error handling (fail-open) | ✅ |
-| 10 | canBlock=false | ❌ CLI only |
-| 11 | AI provenance tracking | ⚠️ Review |
-
-See [docs/testing/cli-testing.md](docs/testing/cli-testing.md) for details.
+The agent will create the rule, validate it, and walk you through how it works.
 
 ## License
 
