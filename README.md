@@ -4,7 +4,7 @@
   <img src="assets/gsc-rules-demos.png" width="600" alt="gsc-rules-demos" />
 </p>
 
-A hands-on demo repo for experiencing GitSense rules with a coding agent. Try it out and see how agents can be warned, guided, and blocked — just by asking.
+A hands-on demo repo for experiencing GitSense rules with a coding agent. Try it out and see how agents can be warned, guided, and blocked.
 
 ## Quick Start
 
