@@ -1,4 +1,4 @@
-# gsc-rules-demos
+# Agent Rules in Action
 
 <p align="center">
   <img src="assets/gsc-rules-demos.png" width="600" alt="gsc-rules-demos" />
