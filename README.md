@@ -1,14 +1,18 @@
-# Agent Rules in Action
+# Agent Rules Demo
 
 <p align="center">
   <img src="assets/gsc-rules-demos.png" width="600" alt="gsc-rules-demos" />
 </p>
 
-A hands-on demo repo for experiencing GitSense rules with a coding agent. Try it out and see how agents can be warned, guided, and blocked.
+<p align="center">
+  <strong>Coming from pi-brains?</strong> This is the rules demo repo.
+</p>
+
+Use this repo to try GitSense rules, notes, lessons, and triggers with Pi.
 
 ## Quick Start
 
-Clone the repo and start your agent:
+Clone the repo:
 
 ```bash
 git clone https://github.com/gitsense/gsc-rules-demos.git
@@ -22,13 +26,13 @@ pi install npm:@gitsense/pi-brains
 pi
 ```
 
-Once Pi starts, initialize the brains:
+If this is your first time using `pi-brains`, run:
 
 ```
 /brains
 ```
 
-This teaches the agent how to use `gsc` commands. Rules are enabled by default.
+This initializes pi-brains and GitSense context for the repo. If GitSense is not installed, `/brains` will show install instructions. Rules are enabled by default.
 
 ## What You'll Learn
 
