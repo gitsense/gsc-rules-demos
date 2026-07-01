@@ -4,10 +4,6 @@
   <img src="assets/gsc-rules-demos.png" width="600" alt="gsc-rules-demos" />
 </p>
 
-<p align="center">
-  <strong>Coming from pi-brains?</strong> This is the rules demo repo.
-</p>
-
 Use this repo to try GitSense rules, notes, lessons, and triggers with Pi.
 
 ## Quick Start
@@ -49,7 +45,7 @@ Once your agent is running, try these prompts and see what happens.
 
 ### 1. Intercept a Command
 
-**Try this:**
+**Send:**
 
 ```
 exit
@@ -61,7 +57,7 @@ exit
 
 ### 2. Read a Ledger File
 
-**Try this:**
+**Send:**
 
 ```
 read data/accounting/q1.ledger
@@ -73,7 +69,7 @@ read data/accounting/q1.ledger
 
 ### 3. Edit an Auto-Generated File
 
-**Try this:**
+**Send:**
 
 ```
 edit src/generated/types.ts to add a nickname field
@@ -85,7 +81,7 @@ edit src/generated/types.ts to add a nickname field
 
 ### 4. Edit a Production Config
 
-**Try this:**
+**Send:**
 
 ```
 edit config/production.env to change APP_PORT to 9090
@@ -97,7 +93,7 @@ edit config/production.env to change APP_PORT to 9090
 
 ### 5. Edit a Deployment Workflow
 
-**Try this:**
+**Send:**
 
 ```
 edit .github/workflows/deploy.yml to add a logging step
@@ -109,7 +105,7 @@ edit .github/workflows/deploy.yml to add a logging step
 
 ### 6. Parallel Safety Checks
 
-**Try this:**
+**Send:**
 
 ```
 edit src/parallel/checkout.ts to add a discount field
@@ -121,7 +117,7 @@ edit src/parallel/checkout.ts to add a discount field
 
 ### 7. Edit Third-Party Code
 
-**Try this:**
+**Send:**
 
 ```
 edit third_party/vendor-widget.js to add input validation
