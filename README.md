@@ -34,6 +34,8 @@ This initializes pi-brains and GitSense context for the repo. If GitSense is not
 
 ## What You'll Learn
 
+The examples below show how repo owners can ship agent behavior and project knowledge with the code:
+
 - **Block risky operations** — Prevent agents from editing production configs without approval
 - **Use notes on demand** — Teach agents how to interpret files with project-specific context
 - **Inject context** — Provide format guidance when agents read specialized files
@@ -41,9 +43,9 @@ This initializes pi-brains and GitSense context for the repo. If GitSense is not
 - **Intercept input** — Guide users toward correct agent commands
 - **Run triggers in parallel** — Execute multiple safety checks concurrently
 
-## See it in Action
+## Try the Examples
 
-Once your agent is running, try these prompts and see what happens.
+Once your agent is running, send these prompts and see what happens.
 
 For a more hands-on walkthrough with setup notes and expected behavior, see the [Pi Hands-On Guide](docs/pi/hands-on.md).
 
