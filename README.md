@@ -112,7 +112,7 @@ edit .github/workflows/deploy.yml to add a logging step
 **Send:**
 
 ```
-edit src/parallel/checkout.ts to add a discount field
+edit src/parallel/checkout.ts to add a giftMessage field
 ```
 
 **What happens:** Three triggers run concurrently and complete in about 1.5 seconds, the duration of the slowest trigger, instead of about 3 seconds if they ran one after another. You'll see notices from each trigger.

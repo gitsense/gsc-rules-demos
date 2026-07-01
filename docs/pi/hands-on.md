@@ -286,7 +286,7 @@ gsc rules show 019f0722-2030 --format json
 
 **Prompt:**
 ```
-edit src/parallel/checkout.ts to add a discount field
+edit src/parallel/checkout.ts to add a giftMessage field
 ```
 
 **Expected behavior:**
