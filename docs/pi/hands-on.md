@@ -1,6 +1,36 @@
-# Pi Rules Tutorial
+# Pi Hands-On Guide
 
-Step-by-step guide for understanding and using GitSense rules in Pi.
+A hands-on guide for trying the GitSense rules, notes, lessons, and triggers included in this repo with Pi.
+
+The README gives you the short path. This guide walks through each demo in more detail.
+
+## What You'll Learn
+
+- how rules can intercept prompts before they reach the model
+- how rules can tell Pi to check notes before reading unfamiliar files
+- how warnings differ from blocking guards
+- how multiple rules can match the same action
+- how triggers can run in parallel
+- how rule priority and frequency affect delivery
+- how trigger failures fail open
+- how provenance tracking can create audit obligations
+- how to create personal and repo rules by asking Pi
+
+## Contents
+
+- [Setup](#setup)
+- [Example 1: Prompt Interception](#example-1-prompt-interception-start-here)
+- [Example 2: Rule-Guided Notes](#example-2-rule-guided-notes)
+- [Example 3: Notice-Only Warning](#example-3-notice-only-warning-without-blocking)
+- [Example 4: Executable Edit Block](#example-4-executable-edit-block-with-environment-variable-bypass)
+- [Example 5: Multi-Rule Match](#example-5-multi-rule-match)
+- [Example 6: Parallel Execution](#example-6-parallel-execution)
+- [Example 7: Priority Ordering](#example-7-priority-ordering)
+- [Example 8: Frequency Modes](#example-8-frequency-modes)
+- [Example 9: Error Handling](#example-9-error-handling-fail-open)
+- [Example 10: AI Provenance Tracking](#example-10-ai-provenance-tracking)
+- [Example 11: Mandatory Steering](#example-11-mandatory-steering-advanced)
+- [Example 12: Repo-Specific Rules](#example-12-repo-specific-rules-advanced)
 
 ## Setup
 
@@ -9,12 +39,13 @@ cd ~/gsc-rules-demos
 pi
 ```
 
-Once Pi starts, initialize the expert context:
+If this is your first time using `pi-brains` in this repo, run:
+
 ```
 /brains
 ```
 
-This teaches the agent how to use `gsc` commands (required for Examples 10-11).
+This initializes pi-brains and GitSense context for the repo. If GitSense is not installed, `/brains` will show install instructions.
 
 Optional - enable debug logging:
 ```
@@ -65,9 +96,9 @@ add a rule that intercepts "clear" and shows a message to use /clear instead
 
 ---
 
-## Example 2: Declarative Rules (Instructions)
+## Example 2: Rule-Guided Notes
 
-**What you'll learn:** How declarative rules deliver instructions the first time, then get out of the way.
+**What you'll learn:** How declarative rules can tell Pi to check notes before interpreting unfamiliar files.
 
 **Rule ID:** `019f097d-9091-7e89-a871-aa786b7c4a0b`
 **Rule type:** Declarative (instruction-only)

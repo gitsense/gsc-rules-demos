@@ -356,5 +356,5 @@ console.log(JSON.stringify({
 
 - [Parallel Execution](parallel-execution.md)
 - [Pi Input Command Mapping](../pi/input-command-mapping.md)
-- [Pi Agent Documentation](../pi/tutorial.md)
+- [Pi Hands-On Guide](../pi/hands-on.md)
 - [GitSense CLI](https://github.com/gitsense/gsc-cli)
