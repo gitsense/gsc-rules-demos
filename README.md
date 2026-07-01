@@ -6,7 +6,7 @@
 
 Use this repo to try GitSense rules, notes, lessons, and triggers with Pi.
 
-This repo demonstrates how repo owners can ship expected conventions and knowledge with the code. See [How This Repo Works](docs/how-this-repo-works.md).
+To learn more about how the repo ships conventions and knowledge with the code, see [How This Repo Works](docs/how-this-repo-works.md).
 
 ## Quick Start
 
@@ -67,7 +67,7 @@ exit
 read data/accounting/q1.ledger
 ```
 
-**What happens:** The agent blocks the read and tells you to review accounting notes first. These notes explain the ledger format and business context. Try the same prompt again — the second read succeeds because the instructions were already delivered.
+**What happens:** The agent blocks the read and tells Pi to query GitSense notes with `gsc notes get --file data/accounting/q1.ledger --format json`. The note explains the ledger format and business context. Try the same prompt again — the second read succeeds because the instructions were already delivered.
 
 ---
 
@@ -107,7 +107,7 @@ edit .github/workflows/deploy.yml to add a logging step
 
 ---
 
-### 6. Parallel Safety Checks
+### 6. Parallel Trigger Execution
 
 **Send:**
 
@@ -115,7 +115,7 @@ edit .github/workflows/deploy.yml to add a logging step
 edit src/parallel/checkout.ts to add a discount field
 ```
 
-**What happens:** Three triggers run concurrently and complete in ~1.5 seconds (the longest trigger) instead of ~3 seconds (if they ran sequentially). You'll see notices from each one.
+**What happens:** Three triggers run concurrently and complete in about 1.5 seconds, the duration of the slowest trigger, instead of about 3 seconds if they ran one after another. You'll see notices from each trigger.
 
 ---
 

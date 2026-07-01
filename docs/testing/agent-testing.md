@@ -16,11 +16,12 @@ Use this checklist when testing rules in your coding agent's TUI.
 ### 1. Declarative Read Block
 **File:** `data/accounting/q1.ledger`
 **Action:** `read`
-**Expected:** Block with instructions to review accounting notes
+**Expected:** Block with instructions to query GitSense notes
 
 - [ ] `read data/accounting/q1.ledger`
 - [ ] Verify block message appears
-- [ ] Verify instructions mention accounting notes for this file or topic
+- [ ] Verify instructions mention `gsc notes get --file data/accounting/q1.ledger --format json`
+- [ ] Verify the agent does not search the filesystem for notes
 - [ ] Retry read after instructions delivered
 - [ ] Second read should succeed
 

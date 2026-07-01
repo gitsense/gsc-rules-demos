@@ -36,8 +36,9 @@ read data/accounting/q1.ledger
 ```
 
 **Expected behavior:**
-- First read: Blocks with instructions to review accounting notes
-- Instructions mention accounting notes for this file or topic
+- First read: Blocks with instructions to query GitSense notes
+- Instructions mention: `gsc notes get --file data/accounting/q1.ledger --format json`
+- Agent should not search the filesystem for notes
 - Subsequent reads: May skip if delivery tracking is active
 
 **Verify:**

@@ -119,8 +119,9 @@ read data/accounting/q1.ledger
 1. You type the prompt
 2. Pi processes it (LLM decides to call `read` tool)
 3. **Block happens when Pi tries to execute the read**
-4. Message tells Pi to review accounting notes for this file or topic
-5. The accounting note explains the ledger format and business meaning
+4. Message tells Pi to query GitSense notes with `gsc notes get --file data/accounting/q1.ledger --format json`
+5. Pi should use the returned note content to explain the ledger format and business meaning
+6. Pi should not search the filesystem for notes
 
 **Important:** The block occurs at tool execution time, not at prompt time. You'll see Pi start to process, then get blocked when it tries to actually read the file.
 
