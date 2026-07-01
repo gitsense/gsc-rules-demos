@@ -6,6 +6,8 @@
 
 Use this repo to try GitSense rules, notes, lessons, and triggers with Pi.
 
+This repo demonstrates how repo owners can ship expected conventions and knowledge with the code. See [How This Repo Works](docs/how-this-repo-works.md).
+
 ## Quick Start
 
 Clone the repo:
@@ -42,6 +44,8 @@ This initializes pi-brains and GitSense context for the repo. If GitSense is not
 ## See it in Action
 
 Once your agent is running, try these prompts and see what happens.
+
+For a more hands-on walkthrough with setup notes and expected behavior, see the [Pi Hands-On Guide](docs/pi/hands-on.md).
 
 ### 1. Intercept a Command
 
